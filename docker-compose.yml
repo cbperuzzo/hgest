@@ -1,0 +1,19 @@
+version: '3.9'
+
+services:
+
+  db:
+    image: postgres
+    ports:
+      - 3030:3030
+    volumes:
+      - pg-data:/var/lib/hgest/back/source
+    environment:
+      POSTGRES_PASSWORD: hill3m_
+      POSTGRES_USER: postgres
+
+    command: -p 3030
+volumes:
+  pg-data:
+    labels:
+      com.example.description: "Database volume for hgest"
