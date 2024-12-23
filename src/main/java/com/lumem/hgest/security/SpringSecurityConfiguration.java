@@ -1,6 +1,6 @@
 package com.lumem.hgest.security;
 
-import com.lumem.hgest.model.Repositories.UserInfoRepository;
+import com.lumem.hgest.repository.UserInfoRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

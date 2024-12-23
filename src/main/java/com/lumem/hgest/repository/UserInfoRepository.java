@@ -1,4 +1,4 @@
-package com.lumem.hgest.model.Repositories;
+package com.lumem.hgest.repository;
 
 import com.lumem.hgest.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;

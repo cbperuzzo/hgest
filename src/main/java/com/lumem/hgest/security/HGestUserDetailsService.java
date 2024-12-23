@@ -1,7 +1,8 @@
 package com.lumem.hgest.security;
 
-import com.lumem.hgest.model.Repositories.UserInfoRepository;
+
 import com.lumem.hgest.model.User;
+import com.lumem.hgest.repository.UserInfoRepository;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
