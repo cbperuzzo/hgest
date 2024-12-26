@@ -12,21 +12,21 @@ public class Entry {
     @GeneratedValue
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY,targetEntity = User.class)
+    @ManyToOne(fetch = FetchType.LAZY,targetEntity = StoredUser.class)
     @JoinColumn(name = "UserEmployee_id")
-    private User user;
+    private StoredUser storedUser;
     private String os;
     private String segment;
     private LocalTime time;
     private LocalDate date;
 
-    public Entry(LocalDate date, Long id, String os, String segment, LocalTime time, User user) {
+    public Entry(LocalDate date, Long id, String os, String segment, LocalTime time, StoredUser storedUser) {
         this.date = date;
         this.id = id;
         this.os = os;
         this.segment = segment;
         this.time = time;
-        this.user = user;
+        this.storedUser = storedUser;
     }
 
 }
