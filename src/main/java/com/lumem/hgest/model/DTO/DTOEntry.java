@@ -1,4 +1,4 @@
-package com.lumem.hgest.model;
+package com.lumem.hgest.model.DTO;
 
 
 import java.time.LocalDate;

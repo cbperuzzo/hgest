@@ -18,17 +18,25 @@ public class StoredUser implements UserDetails, CredentialsContainer {
 
     private String userName;
 
+    private String salt;
+
+    private String role;
+
     private String password;
 
-    public StoredUser(long id, String userName, String password) {
+    public StoredUser(long id, String salt, String password, String role, String userName) {
         this.id = id;
-        this.userName = userName;
+        this.salt = salt;
         this.password = password;
+        this.role = role;
+        this.userName = userName;
     }
 
-    public StoredUser(String userName, String password) {
-        this.userName = userName;
+    public StoredUser(String salt, String password, String role, String userName) {
+        this.salt = salt;
         this.password = password;
+        this.role = role;
+        this.userName = userName;
     }
 
     public StoredUser() {
@@ -45,6 +53,8 @@ public class StoredUser implements UserDetails, CredentialsContainer {
     public void setUserName(String userName) {
         this.userName = userName;
     }
+
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -65,9 +75,13 @@ public class StoredUser implements UserDetails, CredentialsContainer {
         this.password = password;
     }
 
+    public String getSalt(){
+        return this.salt;
+    }
 
     @Override
     public void eraseCredentials() {
         this.password = null;
+        this.salt = null;
     }
 }

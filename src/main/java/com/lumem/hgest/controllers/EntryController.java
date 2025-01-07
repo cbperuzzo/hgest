@@ -1,6 +1,6 @@
 package com.lumem.hgest.controllers;
 
-import com.lumem.hgest.model.DTOEntry;
+import com.lumem.hgest.model.DTO.DTOEntry;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
