@@ -1,32 +1,33 @@
 package com.lumem.hgest.security;
 
-import com.lumem.hgest.model.Repositories.UserInfoRepository;
-import com.lumem.hgest.model.User;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
+import com.lumem.hgest.model.StoredUser;
+import com.lumem.hgest.repository.StoredUserRepository;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-import java.util.List;
-
+@Service
 public class HGestUserDetailsService implements UserDetailsService {
 
-    private UserInfoRepository source;
+    private StoredUserRepository source;
 
-    public HGestUserDetailsService(UserInfoRepository source) {
+    public HGestUserDetailsService(StoredUserRepository source) {
         this.source = source;
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User u = source.getByUserName(username);
+    public StoredUser loadUserByUsername(String username) throws UsernameNotFoundException {
+        StoredUser u = source.getByUserName(username);
 
         if (u == null){
             throw new UsernameNotFoundException("username not found");
         }
 
-        return new org.springframework.security.core.userdetails.User(u.getUserName(),u.getPassword(),true, true,true,
-                true, List.of(new SimpleGrantedAuthority("USER")));
+        return u;
 
     }
 }
