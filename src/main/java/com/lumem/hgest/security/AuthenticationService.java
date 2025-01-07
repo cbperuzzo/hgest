@@ -1,17 +1,14 @@
 package com.lumem.hgest.security;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
+import com.lumem.hgest.model.StoredUser;
 import org.springframework.stereotype.Service;
 
 @Service
 public class AuthenticationService {
 
-    public String getCurrentUserName(){
-        User u =(User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return u.getUsername();
+    public StoredUser getCurrentUser(){
+        return (StoredUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 
 }

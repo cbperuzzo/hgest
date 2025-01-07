@@ -1,6 +1,8 @@
 package com.lumem.hgest.controllers;
 
+
 import com.lumem.hgest.security.AuthenticationService;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -15,16 +17,15 @@ public class homeController {
         this.authenticationService = authenticationService;
     }
 
-    @RequestMapping("/home")
-    @ResponseBody
-    public String home(){
-        return "oi oi oi";
+    @RequestMapping("/")
+    public String nothing(){
+        return "redirect:home";
     }
 
-    @RequestMapping("/hometest")
-    @ResponseBody
-    public String homeTest(){
-        return authenticationService.getCurrentUserName();
+    @RequestMapping("/home")
+    public ModelAndView home(){
+        ModelAndView mv = new ModelAndView("home");
+        return mv;
     }
 
 }
