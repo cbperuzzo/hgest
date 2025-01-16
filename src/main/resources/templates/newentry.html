@@ -54,8 +54,6 @@
                 <li style="color:red" th:each="err : ${#fields.errors('time')}" th:text="${err}"></li>
             </ul>
 
-        </div>
-        <div class="mb-3">
             <label for="date" class="form-label">date</label>
             <input type="date" value="" th:value="${date}" th:field="*{date}" class="form-control" id="date" name="date">
         </div>

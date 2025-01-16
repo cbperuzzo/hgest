@@ -25,6 +25,7 @@ public class homeController {
     @RequestMapping("/home")
     public ModelAndView home(){
         ModelAndView mv = new ModelAndView("home");
+        mv.addObject("text",authenticationService.getCurrentUser().getUsername());
         return mv;
     }
 

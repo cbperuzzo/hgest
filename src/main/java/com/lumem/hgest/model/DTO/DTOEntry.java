@@ -22,7 +22,7 @@ public class DTOEntry {
         LocalTime localTime = LocalTime.now();
         String[] splitTime = localTime.toString().split(":");
         String time = splitTime[0]+":"+splitTime[1];
-        String date = localDate.getYear()+"-"+localDate.getMonthValue()+"-"+localDate.getDayOfMonth();
+        String date = localDate.getMonthValue()+"-"+localDate.getDayOfMonth()+"-"+localDate.getYear();
         return new DTOEntry(date,null,null,time);
     }
 
