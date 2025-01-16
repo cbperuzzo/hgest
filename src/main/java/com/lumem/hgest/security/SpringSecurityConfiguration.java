@@ -21,6 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
+import org.springframework.security.web.server.authentication.logout.WebSessionServerLogoutHandler;
 
 import javax.xml.transform.Source;
 
@@ -46,15 +47,29 @@ public class SpringSecurityConfiguration{
     @Bean
     public SecurityFilterChain FilterChain(HttpSecurity http) throws Exception {
 
-        http.authorizeHttpRequests(r -> r.anyRequest().authenticated());
+        http.authorizeHttpRequests(r -> {
+            r.requestMatchers("/register").permitAll();
+            r.anyRequest().authenticated();
+        });
 
-        http.formLogin(withDefaults());
+        http.formLogin( x ->
+        {
+            x.loginPage("/login").permitAll();
+            x.successForwardUrl("/home");
+            x.loginProcessingUrl("/login/processing").permitAll();
+            x.usernameParameter("username");
+            x.passwordParameter("password");
+
+        });
+
+        http.logout(l -> {
+            l.logoutUrl("/logout");
+            l.logoutSuccessUrl("/login").permitAll();
+        });
 
         http.csrf((csrf) -> csrf
                 .csrfTokenRepository(new HttpSessionCsrfTokenRepository())
         );
-
-        http.rememberMe(withDefaults());
 
         http.authenticationProvider(new HGestAuthenticationProvider(userDetailsService,passwordEncoder()));
         http.userDetailsService(userDetailsService);
