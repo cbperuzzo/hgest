@@ -12,7 +12,4 @@ public class AuthenticationService {
         return (StoredUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 
-    public void logout(){
-    }
-
 }
