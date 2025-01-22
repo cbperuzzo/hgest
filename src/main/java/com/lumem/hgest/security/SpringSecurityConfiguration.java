@@ -2,25 +2,32 @@ package com.lumem.hgest.security;
 
 import com.lumem.hgest.model.StoredUser;
 import com.lumem.hgest.repository.StoredUserRepository;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.ProviderManagerBuilder;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.RememberMeConfigurer;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.logout.HeaderWriterLogoutHandler;
+import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices;
+import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices.RememberMeTokenAlgorithm;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.security.web.header.writers.ClearSiteDataHeaderWriter;
 import org.springframework.security.web.server.authentication.logout.WebSessionServerLogoutHandler;
@@ -32,8 +39,6 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @EnableWebSecurity
 @Configuration
 public class SpringSecurityConfiguration{
-
-
     private HGestUserDetailsService userDetailsService;
 
     public SpringSecurityConfiguration(HGestUserDetailsService userDetailsService) {
@@ -50,9 +55,8 @@ public class SpringSecurityConfiguration{
     public SecurityFilterChain FilterChain(HttpSecurity http) throws Exception {
 
         http.authorizeHttpRequests(r -> {
-            r.requestMatchers("/register").permitAll();
-            r.requestMatchers("/css/login.css").permitAll();
-            r.anyRequest().authenticated();
+            r.requestMatchers("/css/login.css","/register","/css/register.css").permitAll()
+            .anyRequest().authenticated();
         });
 
         http.formLogin( x ->
@@ -74,6 +78,8 @@ public class SpringSecurityConfiguration{
 
         });
 
+        http.rememberMe(withDefaults());
+
         http.csrf((csrf) -> csrf
                 .csrfTokenRepository(new HttpSessionCsrfTokenRepository())
         );
@@ -83,7 +89,5 @@ public class SpringSecurityConfiguration{
 
         return http.build();
     }
-
-
 
 }

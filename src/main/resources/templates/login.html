@@ -27,6 +27,8 @@
             <ul>
                 <li style="color:red" th:each="err : ${#fields.errors('password')}" th:text="${err}"></li>
             </ul>
+            <label for="remember-me" class="form-label">Remember me:</label>
+            <input type="checkbox" name="remember-me" class="form-check-input" id="remember-me">
         </div>
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
         <button type="submit" class="btn btn btn-outline-success">Submit</button>
