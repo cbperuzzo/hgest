@@ -1,16 +1,16 @@
 package com.lumem.hgest.model.DTO;
 
 public class DTORegister{
-    private String Username;
+    private String username;
     private String password;
-    private String passwordConfirmation;
+    private String cpassword;
     private String key;
 
     public DTORegister(String key, String password, String passwordConfirmation, String username) {
         this.key = key;
         this.password = password;
-        this.passwordConfirmation = passwordConfirmation;
-        Username = username;
+        this.cpassword = passwordConfirmation;
+        this.username = username;
     }
 
     public DTORegister(String key) {
@@ -18,6 +18,7 @@ public class DTORegister{
     }
 
     public DTORegister() {
+
     }
 
     public String getKey() {
@@ -36,19 +37,21 @@ public class DTORegister{
         this.password = password;
     }
 
-    public String getPasswordConfirmation() {
-        return passwordConfirmation;
+    public String getCpassword() {
+        return cpassword;
     }
 
-    public void setPasswordConfirmation(String passwordConfirmation) {
-        this.passwordConfirmation = passwordConfirmation;
+    public void setCpassword(String Cpassword) {
+        this.cpassword = Cpassword;
     }
 
     public String getUsername() {
-        return Username;
+        return username;
     }
 
     public void setUsername(String username) {
-        Username = username;
+        this.username = username;
     }
+
+
 }

@@ -1,6 +1,7 @@
 package com.lumem.hgest.controllers;
 
 import com.lumem.hgest.model.DTO.DTOLogin;
+import com.lumem.hgest.model.DTO.DTORegister;
 import com.lumem.hgest.security.AuthenticationService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,9 +32,13 @@ public class UserController {
 
     @RequestMapping("/register")
     public ModelAndView register(){
-        return new ModelAndView("register");
+        ModelAndView mv = new ModelAndView("register");
+        mv.addObject("dtoregister",new DTORegister());
+        return mv;
     }
 
-    //@RequestMapping(method = RequestMethod.GET, )
+
+
+
 
 }
