@@ -16,6 +16,12 @@ public class UserController {
         this.authenticationService = authenticationService;
     }
 
+    @RequestMapping("/confirm/logout")
+    public ModelAndView logout(){
+
+        return new ModelAndView("confirmlogout");
+    }
+
     @RequestMapping("/login")
     public ModelAndView login(){
         ModelAndView mv = new ModelAndView("login");

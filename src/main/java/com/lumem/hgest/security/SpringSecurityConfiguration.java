@@ -20,7 +20,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.logout.HeaderWriterLogoutHandler;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
+import org.springframework.security.web.header.writers.ClearSiteDataHeaderWriter;
 import org.springframework.security.web.server.authentication.logout.WebSessionServerLogoutHandler;
 
 import javax.xml.transform.Source;
@@ -49,6 +51,7 @@ public class SpringSecurityConfiguration{
 
         http.authorizeHttpRequests(r -> {
             r.requestMatchers("/register").permitAll();
+            r.requestMatchers("/css/login.css").permitAll();
             r.anyRequest().authenticated();
         });
 
@@ -63,8 +66,12 @@ public class SpringSecurityConfiguration{
         });
 
         http.logout(l -> {
-            l.logoutUrl("/logout");
-            l.logoutSuccessUrl("/login").permitAll();
+            l.logoutUrl("/logout").permitAll();
+            l.logoutSuccessUrl("/login");
+            l.addLogoutHandler(new HeaderWriterLogoutHandler(
+                    new ClearSiteDataHeaderWriter(ClearSiteDataHeaderWriter.Directive.COOKIES))
+            );
+
         });
 
         http.csrf((csrf) -> csrf
