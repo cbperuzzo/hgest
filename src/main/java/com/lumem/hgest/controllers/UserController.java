@@ -37,6 +37,11 @@ public class UserController {
         return mv;
     }
 
+    @RequestMapping("/registering/processing")
+    public ModelAndView registerProcessing(){
+        return null;
+    }
+
 
 
 

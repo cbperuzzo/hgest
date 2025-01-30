@@ -1,12 +1,12 @@
 package com.lumem.hgest.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import com.lumem.hgest.model.Role.RoleEnum;
+import jakarta.persistence.*;
 import org.springframework.security.core.CredentialsContainer;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -20,11 +20,12 @@ public class StoredUser implements UserDetails, CredentialsContainer {
 
     private String salt;
 
-    private String role;
+    @Enumerated(EnumType.STRING)
+    private RoleEnum role;
 
     private String password;
 
-    public StoredUser(long id, String salt, String password, String role, String userName) {
+    public StoredUser(long id, String salt, String password, RoleEnum role, String userName) {
         this.id = id;
         this.salt = salt;
         this.password = password;
@@ -32,7 +33,7 @@ public class StoredUser implements UserDetails, CredentialsContainer {
         this.userName = userName;
     }
 
-    public StoredUser(String salt, String password, String role, String userName) {
+    public StoredUser(String salt, String password, RoleEnum role, String userName) {
         this.salt = salt;
         this.password = password;
         this.role = role;
@@ -40,6 +41,14 @@ public class StoredUser implements UserDetails, CredentialsContainer {
     }
 
     public StoredUser() {
+    }
+
+    public String getRole() {
+        return role.getName();
+    }
+
+    public void setRole(RoleEnum role) {
+        this.role = role;
     }
 
     public long getId() {
@@ -58,7 +67,14 @@ public class StoredUser implements UserDetails, CredentialsContainer {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        Collection<GrantedAuthority> list = new ArrayList<>();
+        list.add(new GrantedAuthority() {
+            @Override
+            public String getAuthority() {
+                return getRole();
+            }
+        });
+        return list;
     }
 
     @Override
@@ -83,5 +99,16 @@ public class StoredUser implements UserDetails, CredentialsContainer {
     public void eraseCredentials() {
         this.password = null;
         this.salt = null;
+    }
+
+    @Override
+    public String toString() {
+        return "StoredUser{" +
+                "id=" + id +
+                ", userName='" + userName + '\'' +
+                ", salt='" + salt + '\'' +
+                ", role=" + role +
+                ", password='" + password + '\'' +
+                '}';
     }
 }
