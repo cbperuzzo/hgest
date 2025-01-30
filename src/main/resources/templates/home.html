@@ -13,29 +13,11 @@
 
 </head>
 <body>
-<nav class="navbar navbar-expand-lg bg-body-tertiary">
-    <div class="container-fluid">
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-            <div class="navbar-nav">
-                <a class="navbar-brand" aria-current="page" href="/home">Home</a>
-            </div>
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="/new/entry">Nova entrada</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/confirm/logout">Logout</a>
-                </li>
-            </ul>
-        </div>
-    </div>
-</nav>
+<div th:replace="~{fragments/base :: navbar}"></div>
 <div class="home_div">
     <div class="home_text_div">
-        <p class="home_text" th:text="${text}">
+        <p class="home_text" th:text="${user.username}">
+        <p class="home_text" th:text="${user.role}">
 
         </p>
     </div>
