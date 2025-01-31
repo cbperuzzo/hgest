@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.random.RandomGeneratorFactory;
 
 @Entity(name = "user_info")
 public class StoredUser implements UserDetails, CredentialsContainer {
@@ -23,19 +24,19 @@ public class StoredUser implements UserDetails, CredentialsContainer {
     @Enumerated(EnumType.STRING)
     private RoleEnum role;
 
-    private String password;
+    private String hash;
 
-    public StoredUser(long id, String salt, String password, RoleEnum role, String userName) {
+    public StoredUser(long id, String salt, String hash, RoleEnum role, String userName) {
         this.id = id;
         this.salt = salt;
-        this.password = password;
+        this.hash = hash;
         this.role = role;
         this.userName = userName;
     }
 
-    public StoredUser(String salt, String password, RoleEnum role, String userName) {
+    public StoredUser(String hash, RoleEnum role, String userName,String salt) {
         this.salt = salt;
-        this.password = password;
+        this.hash = hash;
         this.role = role;
         this.userName = userName;
     }
@@ -43,7 +44,7 @@ public class StoredUser implements UserDetails, CredentialsContainer {
     public StoredUser() {
     }
 
-    public RoleEnum getRole() {
+    public RoleEnum getRole(){
         return role;
     }
 
@@ -59,12 +60,17 @@ public class StoredUser implements UserDetails, CredentialsContainer {
         this.id = id;
     }
 
+
     public void setUserName(String userName) {
         this.userName = userName;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setHash(String password) {
+        this.hash = password;
+    }
+
+    public String getHash(){
+        return hash;
     }
 
     public String getSalt(){
@@ -85,7 +91,7 @@ public class StoredUser implements UserDetails, CredentialsContainer {
 
     @Override
     public String getPassword() {
-        return password;
+        return hash;
     }
 
     @Override
@@ -95,7 +101,7 @@ public class StoredUser implements UserDetails, CredentialsContainer {
 
     @Override
     public void eraseCredentials() {
-        this.password = null;
+        this.hash = null;
         this.salt = null;
     }
 
@@ -106,7 +112,8 @@ public class StoredUser implements UserDetails, CredentialsContainer {
                 ", userName='" + userName + '\'' +
                 ", salt='" + salt + '\'' +
                 ", role=" + role +
-                ", password='" + password + '\'' +
+                ", password='" + hash + '\'' +
                 '}';
     }
 }
+

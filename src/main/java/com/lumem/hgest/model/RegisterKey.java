@@ -11,6 +11,7 @@ public class RegisterKey {
 
     @GeneratedValue
     @Id
+    private Long id;
     private String value;
-    private boolean isValid;
+    private boolean valid;
 }
