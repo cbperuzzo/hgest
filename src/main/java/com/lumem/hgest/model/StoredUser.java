@@ -43,8 +43,8 @@ public class StoredUser implements UserDetails, CredentialsContainer {
     public StoredUser() {
     }
 
-    public String getRole() {
-        return role.getName();
+    public RoleEnum getRole() {
+        return role;
     }
 
     public void setRole(RoleEnum role) {
@@ -63,7 +63,13 @@ public class StoredUser implements UserDetails, CredentialsContainer {
         this.userName = userName;
     }
 
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
+    public String getSalt(){
+        return this.salt;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -71,7 +77,7 @@ public class StoredUser implements UserDetails, CredentialsContainer {
         list.add(new GrantedAuthority() {
             @Override
             public String getAuthority() {
-                return getRole();
+                return getRole().getName();
             }
         });
         return list;
@@ -85,14 +91,6 @@ public class StoredUser implements UserDetails, CredentialsContainer {
     @Override
     public String getUsername() {
         return this.userName;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getSalt(){
-        return this.salt;
     }
 
     @Override
