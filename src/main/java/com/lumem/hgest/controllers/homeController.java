@@ -31,11 +31,5 @@ public class homeController {
         return userModelAndVeiw.ModelAndViewWithUser("home");
     }
 
-    @ResponseBody
-    @RequestMapping("/test")
-    public String ttt(){
-        return authenticationService.execTest();
-    }
-
 }
 

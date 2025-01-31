@@ -1,10 +1,10 @@
 package com.lumem.hgest.model.Role;
 
 public enum RoleEnum {
-    SUPERVISOR("supervisor",true,false),
-    WORKER("worker",false,false),
-    ADMIN("admin",true,true),
-    DEV("developer",true,true);
+    SUPERVISOR("SUPERVISOR",true,false),
+    WORKER("WORKER",false,false),
+    ADMIN("ADMIN",true,true),
+    DEV("DEV",true,true);
 
     private final String name;
     private final boolean edit;
