@@ -5,4 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface StoredUserRepository extends JpaRepository<StoredUser,Long>{
     StoredUser getByUserName(String userName);
+
+    boolean existsByUserName(String userName);
 }

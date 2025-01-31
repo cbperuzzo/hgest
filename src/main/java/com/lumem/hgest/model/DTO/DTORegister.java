@@ -53,5 +53,9 @@ public class DTORegister{
         this.username = username;
     }
 
+    public boolean doPasswordsMatch(){
+        return password.equals(cpassword);
+    }
+
 
 }
