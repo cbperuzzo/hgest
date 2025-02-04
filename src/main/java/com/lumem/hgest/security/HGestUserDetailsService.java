@@ -3,11 +3,8 @@ package com.lumem.hgest.security;
 
 import com.lumem.hgest.model.StoredUser;
 import com.lumem.hgest.repository.StoredUserRepository;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 @Service

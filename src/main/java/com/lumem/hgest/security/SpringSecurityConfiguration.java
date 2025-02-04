@@ -2,6 +2,7 @@ package com.lumem.hgest.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -15,6 +16,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 
 @EnableWebSecurity
 @Configuration
+@EnableMethodSecurity
 public class SpringSecurityConfiguration{
     private HGestUserDetailsService userDetailsService;
 
@@ -34,14 +36,13 @@ public class SpringSecurityConfiguration{
         http.authorizeHttpRequests(r -> {
             r.requestMatchers("/css/msgform.css","/css/form.css","/css/onehundred.css","/css/background.css",
                             "/register","/register/processing").permitAll()
-                    .requestMatchers("/isadmin").hasRole("ADMIN")
             .anyRequest().authenticated();
         });
 
         http.formLogin( x ->
         {
             x.loginPage("/login").permitAll();
-            x.successForwardUrl("/home");
+            x.defaultSuccessUrl("/home",true);
             x.loginProcessingUrl("/login/processing").permitAll();
             x.usernameParameter("username");
             x.passwordParameter("password");
