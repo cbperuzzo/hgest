@@ -21,12 +21,7 @@ public class homeController {
         this.authenticationService = authenticationService;
     }
 
-    @RequestMapping("/")
-    public String nothing(){
-        return "redirect:home";
-    }
-
-    @RequestMapping("/home")
+    @RequestMapping({"/home","/"})
     public ModelAndView home(){
         return userModelAndVeiw.ModelAndViewWithUser("home");
     }

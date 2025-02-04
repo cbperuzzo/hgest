@@ -14,9 +14,7 @@ import jakarta.validation.Valid;
 import org.springframework.boot.Banner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -44,9 +42,15 @@ public class UserController {
     }
 
     @RequestMapping("/login")
-    public ModelAndView login(@ModelAttribute("msg") Msg msg){
+    public ModelAndView login(@ModelAttribute("msg") Msg msg, @RequestParam(value = "error",required = false) String error){
         ModelAndView mv = new ModelAndView("login");
+        String m;
+        if(!(error == null)){
+            msg.setBody("wrong username or password");
+            msg.setCode("fail");
+        }
         mv.addObject("msg",msg);
+
         mv.addObject("dtologin",new DTOLogin());
 
         return mv;
@@ -85,7 +89,8 @@ public class UserController {
 
         if (approved){
 
-            StoredUser storedUser = storedUserCreator.createUser(dtoRegister.getPassword(),dtoRegister.getUsername(),RoleEnum.WORKER);
+            StoredUser storedUser = storedUserCreator.createUser(dtoRegister.getPassword(),dtoRegister.getUsername()
+                    ,RoleEnum.WORKER); //default for newly created users
             storedUserRepository.save(storedUser);
             return "redirect:/login";
         }
