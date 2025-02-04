@@ -22,8 +22,8 @@
                     <li class="nav-item">
                         <a class="nav-link" aria-current="page" href="/home">Home</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/new/entry">New Entry</a>
+                    <li class="nav-item" th:unless="${user.role.edit}">
+                        <a class="nav-link"  href="/entry">Entry</a>
                     </li>
                     <li class="nav-item" th:if="${user.role.edit}">
                         <a class="nav-link" href="/view/entries">All Entries</a>
