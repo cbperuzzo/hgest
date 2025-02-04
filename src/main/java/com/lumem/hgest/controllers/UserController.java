@@ -8,18 +8,14 @@ import com.lumem.hgest.model.Util.Msg;
 import com.lumem.hgest.model.Util.StoredUserCreator;
 import com.lumem.hgest.repository.RegisterKeyRepository;
 import com.lumem.hgest.repository.StoredUserRepository;
-import com.lumem.hgest.security.AuthenticationService;
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
-import org.springframework.boot.Banner;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import javax.security.auth.login.LoginException;
-import java.beans.Transient;
 
 @Controller
 public class UserController {
@@ -45,7 +41,7 @@ public class UserController {
     public ModelAndView login(@ModelAttribute("msg") Msg msg, @RequestParam(value = "error",required = false) String error){
         ModelAndView mv = new ModelAndView("login");
         String m;
-        if(!(error == null)){
+        if(error != null){
             msg.setBody("wrong username or password");
             msg.setCode("fail");
         }
@@ -63,6 +59,7 @@ public class UserController {
         mv.addObject("dtoregister",new DTORegister());
         return mv;
     }
+
 
     @Transactional
     @RequestMapping(value = "/register/processing",method = RequestMethod.POST)

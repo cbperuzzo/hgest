@@ -1,6 +1,5 @@
 package com.lumem.hgest.model.Util;
 
-import com.fasterxml.jackson.databind.ser.std.StdKeySerializers;
 
 public class Msg {
     private String body;
