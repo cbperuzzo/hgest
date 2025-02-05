@@ -12,9 +12,9 @@ public class AuthenticationService {
 
     }
 
-    public StoredUser getCurrent(){
-        return (StoredUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
-
+    public void authorithiesLogger(){
+        StoredUser storedUser =  (StoredUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        System.out.println(storedUser.getRole().authorities());
     }
 
 
