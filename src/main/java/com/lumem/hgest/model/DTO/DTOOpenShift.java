@@ -4,26 +4,27 @@ package com.lumem.hgest.model.DTO;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-public class DTOEntry {
+
+public class DTOOpenShift {
     private String os;
     private String segment;
     private String time;
     private String date;
 
-    public DTOEntry(String date, String os, String segment, String time) {
+    public DTOOpenShift(String date, String os, String segment, String time) {
         this.date = date;
         this.os = os;
         this.segment = segment;
         this.time = time;
     }
 
-    public static DTOEntry placeholderEntry(){
+    public static DTOOpenShift placeholderEntry(){
         LocalDate localDate = LocalDate.now();
         LocalTime localTime = LocalTime.now();
         String[] splitTime = localTime.toString().split(":");
         String time = splitTime[0]+":"+splitTime[1];
         String date = localDate.getMonthValue()+"-"+localDate.getDayOfMonth()+"-"+localDate.getYear();
-        return new DTOEntry(date,null,null,time);
+        return new DTOOpenShift(date,null,null,time);
     }
 
     public String getDate() {
