@@ -23,7 +23,9 @@ public class DTOOpenShift {
         LocalTime localTime = LocalTime.now();
         String[] splitTime = localTime.toString().split(":");
         String time = splitTime[0]+":"+splitTime[1];
-        String date = localDate.getMonthValue()+"-"+localDate.getDayOfMonth()+"-"+localDate.getYear();
+        String date = localDate.getYear()+"-"
+                +String.format("%02d",localDate.getMonthValue())+"-"
+                +String.format("%02d",localDate.getDayOfMonth());
         return new DTOOpenShift(date,null,null,time);
     }
 
