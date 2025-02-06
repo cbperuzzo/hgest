@@ -16,6 +16,7 @@ public class Shift {
     @ManyToOne(fetch = FetchType.LAZY,targetEntity = StoredUser.class)
     @JoinColumn(name = "UserEmployee_id")
     private StoredUser storedUser;
+
     private String os;
     private String segment;
     private LocalTime openTime;
@@ -31,23 +32,8 @@ public class Shift {
 
     private Long totalMinutes;
 
-    public Shift(StoredUser storedUser, String os, String segment,
-                 LocalTime openTime, LocalDate openDate, @Nullable LocalTime
-                         closeTime, @Nullable LocalDate closeDate, boolean closed, Long totalMinutes) {
-        this.storedUser = storedUser;
-        this.os = os;
-        this.segment = segment;
-        this.openTime = openTime;
-        this.openDate = openDate;
-        this.closeTime = closeTime;
-        this.closeDate = closeDate;
-        this.closed = closed;
-        this.totalMinutes = totalMinutes;
-    }
-
     //open
-    public Shift(Long id, StoredUser storedUser, String os, String segment, LocalTime openTime, LocalDate openDate) {
-        this.id = id;
+    public Shift(StoredUser storedUser, String os, String segment, LocalTime openTime, LocalDate openDate) {
         this.storedUser = storedUser;
         this.os = os;
         this.segment = segment;
@@ -55,5 +41,19 @@ public class Shift {
         this.openDate = openDate;
     }
 
-    //converting the DTO time and date from string to actual date and time objects
+    @Override
+    public String toString() {
+        return "Shift{" +
+                "id=" + id +
+                ", storedUser=" + storedUser +
+                ", os='" + os + '\'' +
+                ", segment='" + segment + '\'' +
+                ", openTime=" + openTime +
+                ", openDate=" + openDate +
+                ", closeTime=" + closeTime +
+                ", closeDate=" + closeDate +
+                ", closed=" + closed +
+                ", totalMinutes=" + totalMinutes +
+                '}';
+    }
 }
