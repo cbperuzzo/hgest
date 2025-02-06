@@ -11,4 +11,12 @@ public class AuthenticationService {
         return (StoredUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
     }
+
+    public Long getCurrentUserId() {
+        StoredUser storedUser = (StoredUser) SecurityContextHolder.getContext()
+                .getAuthentication().getPrincipal();
+
+        return storedUser.getId();
+
+    }
 }
