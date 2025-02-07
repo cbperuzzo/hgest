@@ -41,19 +41,4 @@ public class Shift {
         this.openDate = openDate;
     }
 
-    @Override
-    public String toString() {
-        return "Shift{" +
-                "id=" + id +
-                ", storedUser=" + storedUser +
-                ", os='" + os + '\'' +
-                ", segment='" + segment + '\'' +
-                ", openTime=" + openTime +
-                ", openDate=" + openDate +
-                ", closeTime=" + closeTime +
-                ", closeDate=" + closeDate +
-                ", closed=" + closed +
-                ", totalMinutes=" + totalMinutes +
-                '}';
-    }
 }
