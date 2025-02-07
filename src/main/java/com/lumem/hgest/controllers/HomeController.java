@@ -1,9 +1,11 @@
 package com.lumem.hgest.controllers;
 
 
+import com.lumem.hgest.model.Util.Msg;
 import com.lumem.hgest.model.Util.UserModelAndVeiw;
 import com.lumem.hgest.security.AuthenticationService;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -20,8 +22,10 @@ public class HomeController {
 
 
     @RequestMapping({"/home","/"})
-    public ModelAndView home(){
-        return userModelAndVeiw.ModelAndViewWithUser("home");
+    public ModelAndView home(@ModelAttribute("msg") Msg msg){
+        ModelAndView mv = userModelAndVeiw.ModelAndViewWithUser("home");
+        mv.addObject("msg",msg);
+        return mv;
     }
 
 }

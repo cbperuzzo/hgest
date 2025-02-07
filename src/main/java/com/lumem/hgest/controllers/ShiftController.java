@@ -2,7 +2,10 @@ package com.lumem.hgest.controllers;
 
 import com.lumem.hgest.model.DTO.DTOOpenShift;
 import com.lumem.hgest.model.Shift;
+import com.lumem.hgest.model.Util.Msg;
 import com.lumem.hgest.model.Util.UserModelAndVeiw;
+import com.lumem.hgest.model.Util.err.ValidationException;
+import com.lumem.hgest.repository.ShiftRepository;
 import com.lumem.hgest.repository.StoredUserRepository;
 import com.lumem.hgest.security.AuthenticationService;
 import jakarta.transaction.Transactional;
@@ -11,19 +14,23 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Controller
 public class ShiftController {
+
+    private ShiftRepository shiftRepository;
     private StoredUserRepository storedUserRepository;
     private UserModelAndVeiw userModelAndVeiw;
     private AuthenticationService authenticationService;
 
-    public ShiftController(StoredUserRepository storedUserRepository, UserModelAndVeiw userModelAndVeiw, AuthenticationService authenticationService) {
+    public ShiftController(ShiftRepository shiftRepository, StoredUserRepository storedUserRepository,
+                           UserModelAndVeiw userModelAndVeiw, AuthenticationService authenticationService) {
+        this.shiftRepository = shiftRepository;
         this.storedUserRepository = storedUserRepository;
         this.userModelAndVeiw = userModelAndVeiw;
         this.authenticationService = authenticationService;
@@ -31,8 +38,9 @@ public class ShiftController {
 
     @RequestMapping("/new/shift")
     @PreAuthorize("hasAuthority('WORKER')")
-    public ModelAndView newShiftView(){
+    public ModelAndView newShiftView(@ModelAttribute("msg") Msg msg){
         ModelAndView mv = userModelAndVeiw.ModelAndViewWithUser("newshift");
+        mv.addObject("msg",msg);
         mv.addObject("DTOOpenShift", DTOOpenShift.placeholderEntry());
         return mv;
     }
@@ -40,17 +48,42 @@ public class ShiftController {
     @Transactional
     @RequestMapping(value = "/new/shift/processing",method = RequestMethod.POST)
     @PreAuthorize("hasAuthority('WORKER')")
-    @ResponseBody
-    public String newShiftProcessing(@ModelAttribute("DTOOpenShift") DTOOpenShift dtoOpenShift){
-        Shift newShift = new Shift(
+    public String newShiftProcessing(@ModelAttribute("DTOOpenShift") DTOOpenShift dtoOpenShift, RedirectAttributes redirectAttributes){
+        Msg msg = new Msg("new shift opened successfully","success");
+        String redirect = "redirect:/home";
+
+        try {
+            if (shiftRepository.existsByOs(dtoOpenShift.getOs())){
+                throw new ValidationException("duplicate os");
+            }
+
+            if (dtoOpenShift.getSegment().isBlank() || dtoOpenShift.getOs().isBlank()){
+                throw new ValidationException("empty fields");
+            }
+
+            Shift nShift = new Shift(
                 storedUserRepository.getReferenceById(authenticationService.getCurrentUserId()),
                 dtoOpenShift.getOs(),
                 dtoOpenShift.getSegment(),
                 LocalTime.parse(dtoOpenShift.getTime()),
                 LocalDate.parse(dtoOpenShift.getDate())
         );
+            shiftRepository.save(nShift);
 
-        return newShift.toString() + "<br>"+ dtoOpenShift;
+        }catch (ValidationException e){
+            msg.setBody(e.getMessage());
+            msg.setCode("fail");
+            redirect = "redirect:/new/shift";
+        }
+        catch (Exception e){
+            msg.setBody("something went wrong");
+            msg.setCode("fail");
+            redirect = "redirect:/new/shift";
+        }
+
+        redirectAttributes.addFlashAttribute("msg",msg);
+
+        return redirect;
 
     }
 }
