@@ -1,24 +1,54 @@
-.home_text_div{
-    width:400px;
+.shiftcard{
     height:fit-content;
+    width:320px;
+    padding:10px;
     margin-left:auto;
     margin-right:auto;
-    margin-top:120px;
 }
-.home_text{
-    font-size:10px;
-    color: black;
+.shiftinfo{
+    margin-top:0px;
+    color:#2b2b2b;
+    font-size:10px
+}
+.shiftinfogroup{
+    margin-left:10px;
+    margin-top:10px;
+}
+.grouping{
+    margin-top:40px;
+    margin-left:auto;
+    margin-right:auto;
+    border-left:3px solid #4d5f7c;
+    border-right:3px solid #4d5f7c;
+    width:fit-content;
+    padding-top:40px;
+    padding-bottom:70px;
+    padding-left:200px;
+    padding-right:200px;
+}
+.titlediv{
+    padding-bottom:50px;
+    height:fit-content;
+    width:fit-content;
+    font-size:30px;
+    color:#2b2b2b;
+}
+.toclose{
+    background:#ffffff4d;
+    border-radius:6px;
 }
 .msgbox{
     border-radius:6px;
-    height:120px
+    height:fit-content;
+    width: fit-content;
+    margin-left:auto;
+    margin-right:auto;
     padding-top: 20px;
     padding-bottom: 20px;
     padding-left: 30px;
     padding-right: 30px;
-    margin-left:auto;
-    margin-right:auto;
-    width:300px;
+    text-align:center;
+    margin-top:20px;
 }
 .success{
     border:3px solid rgba(54, 133, 52, 0.6);
@@ -27,4 +57,14 @@
 .fail{
     border:3px solid rgba(175, 27, 27, 0.6);
     background-color:#f44a4a4d;
+}
+.submit-button{
+    width:100%;
+}
+.submitdiv{
+    width:50%;
+    margin-right:auto;
+    margin-left:auto;
+    margin-top:10px;
+    margin-bottom:10px;
 }

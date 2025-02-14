@@ -1,8 +1,10 @@
 package com.lumem.hgest.controllers;
 
 import com.lumem.hgest.model.DTO.DTOOpenShift;
+import com.lumem.hgest.model.DTO.DTOShiftID;
 import com.lumem.hgest.model.Shift;
 import com.lumem.hgest.model.Util.Msg;
+import com.lumem.hgest.model.Util.TimeDifference;
 import com.lumem.hgest.model.Util.UserModelAndVeiw;
 import com.lumem.hgest.model.Util.err.ValidationException;
 import com.lumem.hgest.repository.ShiftRepository;
@@ -61,6 +63,10 @@ public class ShiftController {
                 throw new ValidationException("empty fields");
             }
 
+            if (shiftRepository.existsByStoredUserAndClosed(storedUserRepository.getReferenceById(authenticationService.getCurrentUserId()),false)){
+                throw new ValidationException("you have an unclosed shift");
+            }
+
             Shift nShift = new Shift(
                 storedUserRepository.getReferenceById(authenticationService.getCurrentUserId()),
                 dtoOpenShift.getOs(),
@@ -86,4 +92,33 @@ public class ShiftController {
         return redirect;
 
     }
+    @PreAuthorize("hasAuthority('WORKER')")
+    @RequestMapping(value = "/close/shift/processing",method = RequestMethod.POST)
+    public String closeShift(@ModelAttribute("DTOShiftId") DTOShiftID dtoShiftID, RedirectAttributes redirectAttributes){
+        Msg msg = new Msg("shift closed successfully","success");
+        try{
+            Shift shift = shiftRepository.findById(dtoShiftID.getId()).orElseThrow();
+            if (shift.getStoredUser().getId()!=authenticationService.getCurrentUserId()){
+                throw new ValidationException("shift user and current user don't match");
+            }
+            shift.setClosed(true);
+            shift.setCloseDate(LocalDate.now());
+            shift.setCloseTime(LocalTime.now());
+            long dif = TimeDifference.calc(shift.getOpenTime(),shift.getOpenDate(),shift.getCloseTime(),shift.getCloseDate());
+            shift.setTotalMinutes(dif);
+            shiftRepository.save(shift);
+        }
+        catch (ValidationException e){
+            msg.setBody(e.getMessage());
+            msg.setCode("fail");
+        }
+        catch (Exception e){
+            msg.setBody("something went wrong");
+            msg.setCode("fail");
+            System.out.println(e.getMessage());
+        }
+        redirectAttributes.addFlashAttribute("msg",msg);
+        return "redirect:/home";
+    }
 }
+
