@@ -70,5 +70,6 @@ public class DTOOpenShift {
                 ", time='" + time + '\'' +
                 '}';
     }
+
 }
 

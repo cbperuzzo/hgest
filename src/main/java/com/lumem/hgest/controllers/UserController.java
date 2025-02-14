@@ -8,12 +8,9 @@ import com.lumem.hgest.model.Util.Msg;
 import com.lumem.hgest.model.Util.StoredUserCreator;
 import com.lumem.hgest.repository.RegisterKeyRepository;
 import com.lumem.hgest.repository.StoredUserRepository;
-import jakarta.transaction.Transactional;
+import com.lumem.hgest.security.AuthenticationService;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -23,12 +20,14 @@ public class UserController {
     private StoredUserRepository storedUserRepository;
     private RegisterKeyRepository registerKeyRepository;
     private StoredUserCreator storedUserCreator;
+    private AuthenticationService authenticationService;
 
-    public UserController(StoredUserRepository storedUserRepository,
-                          RegisterKeyRepository registerKeyRepository,StoredUserCreator storedUserCreator) {
+    public UserController(StoredUserRepository storedUserRepository, RegisterKeyRepository registerKeyRepository,
+                          StoredUserCreator storedUserCreator, AuthenticationService authenticationService) {
         this.storedUserRepository = storedUserRepository;
         this.registerKeyRepository = registerKeyRepository;
         this.storedUserCreator = storedUserCreator;
+        this.authenticationService = authenticationService;
     }
 
     @RequestMapping("/confirm/logout")
@@ -61,7 +60,6 @@ public class UserController {
     }
 
 
-    @Transactional
     @RequestMapping(value = "/register/processing",method = RequestMethod.POST)
     public String registerProcessing(@ModelAttribute("dtoregister") DTORegister dtoRegister, RedirectAttributes redirectAttributes){
         Msg msg = new Msg("sucssefully registerd","success");
@@ -92,6 +90,11 @@ public class UserController {
             return "redirect:/login";
         }
         return "redirect:/register";
+    }
+    @ResponseBody
+    @RequestMapping("/profile")
+    public String profile(){
+        return authenticationService.getCurrentUserAuthority();
     }
 
 }

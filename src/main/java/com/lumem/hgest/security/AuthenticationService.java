@@ -19,4 +19,7 @@ public class AuthenticationService {
         return storedUser.getId();
 
     }
+    public String getCurrentUserAuthority(){
+        return  SecurityContextHolder.getContext().getAuthentication().getAuthorities().toString();
+    }
 }
