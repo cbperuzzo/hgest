@@ -5,19 +5,16 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.logout.HeaderWriterLogoutHandler;
-import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
-import org.springframework.security.web.header.writers.ClearSiteDataHeaderWriter;
-
-import static org.springframework.security.config.Customizer.withDefaults;
 
 @EnableWebSecurity
 @Configuration
 @EnableMethodSecurity
 public class SpringSecurityConfiguration{
+
     private HGestUserDetailsService userDetailsService;
 
     public SpringSecurityConfiguration(HGestUserDetailsService userDetailsService) {
@@ -33,36 +30,11 @@ public class SpringSecurityConfiguration{
     @Bean
     public SecurityFilterChain FilterChain(HttpSecurity http) throws Exception {
 
+        http.csrf(AbstractHttpConfigurer::disable);
+
         http.authorizeHttpRequests(r -> {
-            r.requestMatchers("/css/msgform.css","/css/form.css","/css/onehundred.css","/css/background.css",
-                            "/register","/register/processing").permitAll()
-            .anyRequest().authenticated();
+            r.anyRequest().permitAll();
         });
-
-        http.formLogin( x ->
-        {
-            x.loginPage("/login").permitAll();
-            x.defaultSuccessUrl("/home",true);
-            x.loginProcessingUrl("/login/processing").permitAll();
-            x.usernameParameter("username");
-            x.passwordParameter("password");
-
-        });
-
-        http.logout(l -> {
-            l.logoutUrl("/logout").permitAll();
-            l.logoutSuccessUrl("/login");
-            l.addLogoutHandler(new HeaderWriterLogoutHandler(
-                    new ClearSiteDataHeaderWriter(ClearSiteDataHeaderWriter.Directive.COOKIES))
-            );
-
-        });
-
-        http.rememberMe(withDefaults());
-
-        http.csrf((csrf) -> csrf
-                .csrfTokenRepository(new HttpSessionCsrfTokenRepository())
-        );
 
         http.authenticationProvider(new HGestAuthenticationProvider(userDetailsService,passwordEncoder()));
         http.userDetailsService(userDetailsService);

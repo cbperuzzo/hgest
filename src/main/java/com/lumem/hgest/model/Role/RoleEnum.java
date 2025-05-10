@@ -28,13 +28,16 @@ public enum RoleEnum {
         return stats;
     }
 
-    @Override
-    public String toString() {
-        return "RoleEnum{" +
-                "name='" + name + '\'' +
-                ", edit=" + edit +
-                ", stats=" + stats +
-                '}';
+    public static RoleEnum getRoleByName(String name){
+        return switch (name.toUpperCase()) {
+            case "SUPERVISOR" -> RoleEnum.SUPERVISOR;
+            case "WORKER" -> RoleEnum.WORKER;
+            case "ADMIN" -> RoleEnum.ADMIN;
+            case "DEV" -> RoleEnum.DEV;
+            default -> null;
+        };
     }
+
+
 }
 
