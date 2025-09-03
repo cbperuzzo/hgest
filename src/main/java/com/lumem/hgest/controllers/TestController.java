@@ -21,4 +21,10 @@ public class TestController {
         return jwtUtil.createToken("test","role",123);
     }
 
+    @RequestMapping("get/application/name")
+    @ResponseBody
+    public String getApplicationName(){
+        return "HGest";
+    }
+
 }
