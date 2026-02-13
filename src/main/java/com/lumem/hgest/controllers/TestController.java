@@ -18,7 +18,7 @@ public class TestController {
     @RequestMapping("test")
     @ResponseBody
     public String test(){
-        return jwtUtil.createToken("test","role",123);
+        return null;
     }
 
     @RequestMapping("get/application/name")
