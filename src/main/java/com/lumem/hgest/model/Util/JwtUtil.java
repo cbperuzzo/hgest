@@ -1,12 +1,14 @@
 package com.lumem.hgest.model.Util;
 
 import com.lumem.hgest.model.Role.RoleEnum;
+import com.lumem.hgest.model.StoredUser;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
@@ -25,6 +27,9 @@ public class JwtUtil {
 
     @PostConstruct
     public void init() {
+        if (jwtSecret == null || jwtSecret.length() < 32) {
+            throw new IllegalArgumentException("jwt.secret must be at least 32 characters long");
+        }
         this.key = Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
         jwtSecret = null;
     }
@@ -85,5 +90,21 @@ public class JwtUtil {
         }
     }
 
+    public UserDetails getUserDetails(String token){
+        try {
+            RoleEnum role = getRole(token);
+            String name = getSubjectName(token);
+            long uid = getUID(token);
+
+            return new StoredUser(uid,null,role,name);
+
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public String generateToken(StoredUser user) {
+        return createToken(user.getUsername(),user.getRole().toString(),user.getId());
+    }
 }
 

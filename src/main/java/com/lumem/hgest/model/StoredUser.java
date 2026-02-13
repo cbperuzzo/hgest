@@ -18,23 +18,19 @@ public class StoredUser implements UserDetails, CredentialsContainer {
 
     private String userName;
 
-    private String salt;
-
     @Enumerated(EnumType.STRING)
     private RoleEnum role;
 
     private String hash;
 
-    public StoredUser(long id, String salt, String hash, RoleEnum role, String userName) {
+    public StoredUser(long id, String hash, RoleEnum role, String userName) {
         this.id = id;
-        this.salt = salt;
         this.hash = hash;
         this.role = role;
         this.userName = userName;
     }
 
-    public StoredUser(String hash, RoleEnum role, String userName,String salt) {
-        this.salt = salt;
+    public StoredUser(String hash, RoleEnum role, String userName) {
         this.hash = hash;
         this.role = role;
         this.userName = userName;
@@ -72,10 +68,6 @@ public class StoredUser implements UserDetails, CredentialsContainer {
         return hash;
     }
 
-    public String getSalt(){
-        return this.salt;
-    }
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Collection<SimpleGrantedAuthority> authorities = new java.util.ArrayList<>();
@@ -96,7 +88,6 @@ public class StoredUser implements UserDetails, CredentialsContainer {
     @Override
     public void eraseCredentials() {
         this.hash = null;
-        this.salt = null;
     }
 
     @Override
@@ -104,7 +95,6 @@ public class StoredUser implements UserDetails, CredentialsContainer {
         return "StoredUser{" +
                 "id=" + id +
                 ", userName='" + userName + '\'' +
-                ", salt='" + salt + '\'' +
                 ", role=" + role +
                 ", password='" + hash + '\'' +
                 '}';
