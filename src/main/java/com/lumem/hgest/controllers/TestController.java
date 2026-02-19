@@ -1,6 +1,7 @@
 package com.lumem.hgest.controllers;
 
-import com.lumem.hgest.model.Util.JwtUtil;
+import com.lumem.hgest.model.Util.SecurityUser;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -9,16 +10,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class TestController {
 
-    JwtUtil jwtUtil;
-
-    public TestController(JwtUtil jwtUtil) {
-        this.jwtUtil = jwtUtil;
+    public TestController() {
     }
 
-    @RequestMapping("test")
+    @RequestMapping("name")
     @ResponseBody
-    public String test(){
-        return null;
+    public String name(){
+        return ( (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
     }
 
     @RequestMapping("get/application/name")

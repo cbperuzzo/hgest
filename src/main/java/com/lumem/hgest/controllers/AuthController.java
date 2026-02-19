@@ -1,8 +1,8 @@
 package com.lumem.hgest.controllers;
 
-import com.lumem.hgest.model.StoredUser;
+import com.lumem.hgest.model.Util.SecurityUser;
 import com.lumem.hgest.model.Util.JwtUtil;
-import com.lumem.hgest.security.HGestUserDetailsService;
+import com.lumem.hgest.model.Util.RefreshTokenService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -20,50 +20,74 @@ public class AuthController {
 
     private final AuthenticationManager authManager;
     private final JwtUtil jwtUtils;
-    private final HGestUserDetailsService userDetailsService;
+    private final RefreshTokenService refreshTokenService;
 
-    public AuthController(AuthenticationManager authManager, JwtUtil jwtUtils, HGestUserDetailsService userDetailsService) {
+    public AuthController(AuthenticationManager authManager, JwtUtil jwtUtils, RefreshTokenService refreshTokenService) {
         this.authManager = authManager;
         this.jwtUtils = jwtUtils;
-        this.userDetailsService = userDetailsService;
+        this.refreshTokenService = refreshTokenService;
     }
 
 
-
+    @Deprecated
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody AuthRequest request) {
+    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
         try {
             Authentication auth = authManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
+                    new UsernamePasswordAuthenticationToken(request.username(), request.password())
             );
+
+            SecurityUser user = (SecurityUser) auth.getPrincipal();
+
+            String token = jwtUtils.generateAccessToken(user);
+            return ResponseEntity.ok(new AccessToken(token));
+
         } catch (AuthenticationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        StoredUser user = userDetailsService.loadUserByUsername(request.getUsername());
 
-        String token = jwtUtils.generateToken(user);
-        return ResponseEntity.ok(new AuthResponse(token));
-    }
-}
-
-class AuthRequest {
-    private String username;
-    private String password;
-
-
-    public String getUsername() {
-        return username;
     }
 
-    public String getPassword() {
-        return password;
+    @PostMapping("/login/remember")
+    public ResponseEntity<?> loginRemember(@RequestBody LoginRequest request) {
+        try {
+            Authentication auth = authManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(request.username(), request.password())
+            );
+
+            SecurityUser user = (SecurityUser) auth.getPrincipal();
+
+            String refreshToken = refreshTokenService.issue(user);
+            String accessToken =  jwtUtils.generateAccessToken(user);
+
+            return ResponseEntity.ok(new TokenPair(refreshToken,accessToken));
+
+        } catch (AuthenticationException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
     }
 
+    @PostMapping("/refresh")
+    public ResponseEntity<?> loginRefresh(@RequestBody RefreshRequest request ){
+
+        try {
+            String newRefreshToken = refreshTokenService.refresh(request.refreshToken);
+            String newAccessToken = jwtUtils.generateAccessToken(refreshTokenService.extractUser(request.refreshToken));
+            return ResponseEntity.ok(new TokenPair(newRefreshToken,newAccessToken));
+        }
+        catch (Exception ignored){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+    }
+
+    public record LoginRequest (String username, String password){ }
+
+    public record AccessToken(String token) { }
+
+    public record TokenPair(String refresh, String access) { }
+
+    public record RefreshRequest(String refreshToken){ }
+
 }
 
-class AuthResponse {
-    private String token;
-    public AuthResponse(String token) { this.token = token; }
-    public String getToken() { return token; }
-}
