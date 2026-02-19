@@ -1,6 +1,7 @@
 package com.lumem.hgest.security;
 
 
+import com.lumem.hgest.model.Util.SecurityUser;
 import com.lumem.hgest.model.StoredUser;
 import com.lumem.hgest.repository.StoredUserRepository;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -17,14 +18,14 @@ public class HGestUserDetailsService implements UserDetailsService {
     }
 
     @Override
-    public StoredUser loadUserByUsername(String username) throws UsernameNotFoundException {
+    public SecurityUser loadUserByUsername(String username) throws UsernameNotFoundException {
         StoredUser u = source.getByUserName(username);
 
         if (u == null){
             throw new UsernameNotFoundException("username not found");
         }
 
-        return u;
+        return new SecurityUser(u);
 
     }
 }

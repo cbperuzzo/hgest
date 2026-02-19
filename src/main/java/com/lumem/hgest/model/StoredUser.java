@@ -11,7 +11,7 @@ import java.util.Collection;
 
 
 @Entity(name = "user_info")
-public class StoredUser implements UserDetails, CredentialsContainer {
+public class StoredUser {
     @Id
     @GeneratedValue
     private long id;
@@ -55,6 +55,9 @@ public class StoredUser implements UserDetails, CredentialsContainer {
         this.id = id;
     }
 
+    public String getUserName() {
+        return userName;
+    }
 
     public void setUserName(String userName) {
         this.userName = userName;
@@ -68,36 +71,6 @@ public class StoredUser implements UserDetails, CredentialsContainer {
         return hash;
     }
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        Collection<SimpleGrantedAuthority> authorities = new java.util.ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority(role.getName()));
-        return authorities;
-    }
 
-    @Override
-    public String getPassword() {
-        return hash;
-    }
-
-    @Override
-    public String getUsername() {
-        return this.userName;
-    }
-
-    @Override
-    public void eraseCredentials() {
-        this.hash = null;
-    }
-
-    @Override
-    public String toString() {
-        return "StoredUser{" +
-                "id=" + id +
-                ", userName='" + userName + '\'' +
-                ", role=" + role +
-                ", password='" + hash + '\'' +
-                '}';
-    }
 }
 

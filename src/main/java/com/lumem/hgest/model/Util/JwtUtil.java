@@ -96,15 +96,15 @@ public class JwtUtil {
             String name = getSubjectName(token);
             long uid = getUID(token);
 
-            return new StoredUser(uid,null,role,name);
+            return new SecurityUser(new StoredUser(uid,null,role,name));
 
         } catch (Exception e) {
             return null;
         }
     }
 
-    public String generateToken(StoredUser user) {
-        return createToken(user.getUsername(),user.getRole().toString(),user.getId());
+    public String generateAccessToken(SecurityUser user) {
+        return createToken(user.getUsername(),user.getRole().getName(),user.getId());
     }
 }
 
