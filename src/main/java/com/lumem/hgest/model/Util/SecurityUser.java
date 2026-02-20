@@ -11,16 +11,12 @@ import java.util.List;
 
 public class SecurityUser implements UserDetails {
 
-    private final StoredUser storedUser;
-
     private final long id;
     private final String userName;
     private final RoleEnum role;
     private final String password;
 
     public SecurityUser(StoredUser user) {
-
-        storedUser = user;
 
         this.id = user.getId();
         this.userName = user.getUserName();
@@ -60,10 +56,6 @@ public class SecurityUser implements UserDetails {
 
     public long getId() {
         return id;
-    }
-
-    public StoredUser getStoredUser() {
-        return storedUser;
     }
 
     public RoleEnum getRole() {
