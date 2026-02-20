@@ -32,7 +32,7 @@ public class SecurityUser implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(
-                new SimpleGrantedAuthority(role.toString())
+                new SimpleGrantedAuthority("ROLE_"+role.toString().toUpperCase())
         );
     }
 

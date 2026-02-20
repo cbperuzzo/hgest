@@ -17,13 +17,20 @@ public class Shift {
     @JoinColumn(name = "UserEmployee_id")
     private StoredUser storedUser;
 
-    private String os;
+    @ManyToOne(fetch = FetchType.LAZY,targetEntity = Service.class)
+    @JoinColumn(name = "service_id")
+    private Service service;
+
     private String segment;
     private LocalTime openTime;
     private LocalDate openDate;
 
     @Nullable
     private LocalTime closeTime;
+
+    private String description;
+
+    private String imageSource;
 
     @Nullable
     private LocalDate closeDate;
@@ -37,9 +44,8 @@ public class Shift {
     }
 
     //open
-    public Shift(StoredUser storedUser, String os, String segment, LocalTime openTime, LocalDate openDate) {
+    public Shift(StoredUser storedUser, String segment, LocalTime openTime, LocalDate openDate) {
         this.storedUser = storedUser;
-        this.os = os;
         this.segment = segment;
         this.openTime = openTime;
         this.openDate = openDate;
@@ -61,13 +67,6 @@ public class Shift {
         this.storedUser = storedUser;
     }
 
-    public String getOs() {
-        return os;
-    }
-
-    public void setOs(String os) {
-        this.os = os;
-    }
 
     public String getSegment() {
         return segment;
