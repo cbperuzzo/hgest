@@ -125,4 +125,28 @@ public class Shift {
     public void setTotalMinutes(Long totalMinutes) {
         this.totalMinutes = totalMinutes;
     }
+
+    public Service getService() {
+        return service;
+    }
+
+    public void setService(Service service) {
+        this.service = service;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getImageSource() {
+        return imageSource;
+    }
+
+    public void setImageSource(String imageSource) {
+        this.imageSource = imageSource;
+    }
 }

@@ -2,6 +2,7 @@ package com.lumem.hgest.model.Util;
 
 import com.lumem.hgest.model.RefreshToken;
 import com.lumem.hgest.repository.RefreshTokenRepository;
+import com.lumem.hgest.repository.StoredUserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,11 +17,14 @@ public class RefreshTokenService {
 
     private final RefreshTokenRepository repository;
     private final RefreshTokenCrypto crypto;
+    private final StoredUserRepository storedUserRepository;
 
     public RefreshTokenService(RefreshTokenRepository repository,
-                               RefreshTokenCrypto crypto) {
+                               RefreshTokenCrypto crypto,
+                               StoredUserRepository storedUserRepository) {
         this.repository = repository;
         this.crypto = crypto;
+        this.storedUserRepository = storedUserRepository;
     }
 
     public String create(SecurityUser user) {
@@ -37,7 +41,7 @@ public class RefreshTokenService {
         RefreshToken entity = new RefreshToken();
         entity.setTokenId(tokenId);
         entity.setTokenHash(hash);
-        entity.setUser(user.getStoredUser());
+        entity.setUser(storedUserRepository.getReferenceById(user.getId()));
         entity.setCreatedAt(Instant.now());
         entity.setExpiresAt(Instant.now().plus(14, ChronoUnit.DAYS));
 
