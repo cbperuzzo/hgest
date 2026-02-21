@@ -8,6 +8,7 @@ import com.lumem.hgest.repository.ShiftRepository;
 import com.lumem.hgest.repository.StoredUserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -95,6 +96,18 @@ public class ShiftController {
 
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("/update")
+    @PreAuthorize("hasAnyRole('SUPERVISOR','ADMIN','DEV')")
+    public ResponseEntity<?> update(){
+        return null;
+        //TODO
+    }
+
+    //get by id
+    //get all* by user in range (closed)
+    //get total time by user in range (closed)
+    //get all* by service
 
     public record OpenShiftRequest(long serviceId, LocalDate date, LocalTime time, String description, String segment) { }
 
