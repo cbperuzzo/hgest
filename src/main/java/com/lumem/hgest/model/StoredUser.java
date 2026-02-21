@@ -2,12 +2,6 @@ package com.lumem.hgest.model;
 
 import com.lumem.hgest.model.Role.RoleEnum;
 import jakarta.persistence.*;
-import org.springframework.security.core.CredentialsContainer;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
-import java.util.Collection;
 
 
 @Entity(name = "user_info")
@@ -16,6 +10,8 @@ public class StoredUser {
     @GeneratedValue
     private long id;
 
+    private boolean active;
+
     private String userName;
 
     @Enumerated(EnumType.STRING)
@@ -23,11 +19,12 @@ public class StoredUser {
 
     private String hash;
 
-    public StoredUser(long id, String hash, RoleEnum role, String userName) {
+    public StoredUser(long id, String hash, RoleEnum role, String userName, boolean active) {
         this.id = id;
         this.hash = hash;
         this.role = role;
         this.userName = userName;
+        this.active = active;
     }
 
     public StoredUser(String hash, RoleEnum role, String userName) {
@@ -71,6 +68,12 @@ public class StoredUser {
         return hash;
     }
 
+    public boolean isActive() {
+        return active;
+    }
 
+    public void setActive(boolean active) {
+        this.active = active;
+    }
 }
 

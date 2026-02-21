@@ -6,6 +6,7 @@ import com.lumem.hgest.model.StoredUser;
 import com.lumem.hgest.repository.StoredUserRepository;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -21,7 +22,7 @@ public class HGestUserDetailsService implements UserDetailsService {
     public SecurityUser loadUserByUsername(String username) throws UsernameNotFoundException {
         StoredUser u = source.getByUserName(username);
 
-        if (u == null){
+        if (u == null || !u.isActive()){
             throw new UsernameNotFoundException("username not found");
         }
 

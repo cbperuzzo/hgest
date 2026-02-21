@@ -1,31 +1,25 @@
 package com.lumem.hgest.model.Role;
 
 public enum RoleEnum {
-    SUPERVISOR("SUPERVISOR",true,false),
-    WORKER("WORKER",false,false),
-    ADMIN("ADMIN",true,true),
-    DEV("DEV",true,true);
+    SUPERVISOR("SUPERVISOR",(short) 1),
+    WORKER("WORKER",(short) 0),
+    ADMIN("ADMIN",(short) 2),
+    DEV("DEV", (short) 3);
 
     private final String name;
-    private final boolean edit;
-    private final boolean stats;
+    private final short power;
 
-    RoleEnum(String stringName,boolean e,boolean s){
+    RoleEnum(String stringName,short power){
         name = stringName;
-        edit = e;
-        stats = s;
+        this.power = power;
+    }
+
+    public boolean hasControlOver(RoleEnum target){
+        return this.power > target.power;
     }
 
     public String getName() {
         return name;
-    }
-
-    public boolean isEdit() {
-        return edit;
-    }
-
-    public boolean isStats() {
-        return stats;
     }
 
     public static RoleEnum getRoleByName(String name){

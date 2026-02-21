@@ -149,4 +149,5 @@ public class Shift {
     public void setImageSource(String imageSource) {
         this.imageSource = imageSource;
     }
+    
 }
