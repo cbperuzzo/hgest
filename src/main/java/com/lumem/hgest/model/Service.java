@@ -26,7 +26,10 @@ public class Service {
     @OneToMany(fetch = FetchType.LAZY)
     private List<Shift> shifts;
 
-    public Service(long id, long os, String title, String description, LocalDate openDate, LocalTime openTime, LocalDate closeDate, LocalTime closeTime, List<Shift> shifts) {
+    public Service() {
+    }
+
+    public Service(long id, long os, String title, String description, LocalDate openDate, LocalTime openTime, LocalDate closeDate, LocalTime closeTime, boolean closed, List<Shift> shifts) {
         this.id = id;
         this.os = os;
         this.title = title;
@@ -35,6 +38,7 @@ public class Service {
         this.openTime = openTime;
         this.closeDate = closeDate;
         this.closeTime = closeTime;
+        this.closed = closed;
         this.shifts = shifts;
     }
 

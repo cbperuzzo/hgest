@@ -4,6 +4,7 @@ import com.lumem.hgest.model.Shift;
 import com.lumem.hgest.model.StoredUser;
 import com.lumem.hgest.model.Util.SecurityUser;
 import com.lumem.hgest.repository.ServiceRepository;
+import com.lumem.hgest.repository.ShiftRepository;
 import com.lumem.hgest.repository.StoredUserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +16,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 
 @RestController
 @RequestMapping("/shift")
@@ -24,9 +27,11 @@ public class ShiftController {
 
     private final ServiceRepository serviceRepository;
     private final StoredUserRepository storedUserRepository;
+    private final ShiftRepository shiftRepository;
 
-    public ShiftController( ServiceRepository serviceRepository, StoredUserRepository storedUserRepository) {
+    public ShiftController( ServiceRepository serviceRepository, StoredUserRepository storedUserRepository,ShiftRepository shiftRepository) {
 
+        this.shiftRepository = shiftRepository;
         this.serviceRepository = serviceRepository;
         this.storedUserRepository = storedUserRepository;
     }
@@ -46,14 +51,55 @@ public class ShiftController {
         shift.setDescription(shift.getDescription());
         shift.setSegment(request.segment());
 
+        shiftRepository.save(shift);
+
         return ResponseEntity.ok().build();
     }
 
-    public ResponseEntity<?> closeShift(){
-        return null;
+    @PostMapping("/close")
+    public ResponseEntity<?> closeShift(@RequestBody CloseShiftRequest request){
+
+        long userId = ((SecurityUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
+
+        if ( !shiftRepository.existsById(request.id()) )
+            return ResponseEntity.status(400).body("no such shift found");
+
+        Shift shift = shiftRepository.getReferenceById(request.id());
+
+        if (shift.getStoredUser().getId() != userId)
+            return ResponseEntity.status(403).body("invalid user");
+
+        if (shift.isClosed())
+            return ResponseEntity.status(400).body("already closed");
+
+        shift.setClosed(true);
+
+        shift.setCloseDate(request.date());
+        shift.setCloseTime(request.time());
+
+        LocalDateTime open = LocalDateTime.of(
+                shift.getOpenDate(),
+                shift.getOpenTime()
+        );
+
+
+        LocalDateTime close = LocalDateTime.of(
+                request.date(),
+                request.time()
+        );
+
+        long timeElapsed = ChronoUnit.MINUTES.between(open, close);
+        shift.setTotalMinutes(timeElapsed);
+
+        shiftRepository.save(shift);
+
+        return ResponseEntity.ok().build();
     }
 
     public record OpenShiftRequest(long serviceId, LocalDate date, LocalTime time, String description, String segment) { }
 
-    public record CloseShiftRequest(long id) { }
+    public record CloseShiftRequest(long id,LocalTime time, LocalDate date) {
+
+
+    }
 }
