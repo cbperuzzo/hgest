@@ -96,7 +96,7 @@ public class JwtUtil {
             String name = getSubjectName(token);
             long uid = getUID(token);
 
-            return new SecurityUser(new StoredUser(uid,null,role,name));
+            return new SecurityUser(new StoredUser(uid,null,role,name,true));
 
         } catch (Exception e) {
             return null;
