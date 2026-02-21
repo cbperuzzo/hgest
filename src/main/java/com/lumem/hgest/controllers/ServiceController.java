@@ -5,7 +5,6 @@ import com.lumem.hgest.repository.ServiceRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -48,6 +47,20 @@ public class ServiceController {
 
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("/update")
+    @PreAuthorize("hasAnyRole('SUPERVISOR','ADMIN','DEV')")
+    public ResponseEntity<?> update(){
+        //TODO
+        return null;
+    }
+
+    //get by id
+    //get by title LIKE
+    //get by OS
+    //get all* by range
+    //get all* closed
+    //get all* open
 
 
     public record OpenServiceRequest(String title, String description, Long os) {}
