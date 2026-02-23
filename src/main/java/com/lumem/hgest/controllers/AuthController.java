@@ -1,8 +1,8 @@
 package com.lumem.hgest.controllers;
 
-import com.lumem.hgest.model.Util.SecurityUser;
-import com.lumem.hgest.model.Util.JwtUtil;
-import com.lumem.hgest.model.Util.RefreshTokenService;
+import com.lumem.hgest.security.SecurityUser;
+import com.lumem.hgest.security.token.JwtUtil;
+import com.lumem.hgest.security.token.RefreshTokenService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;

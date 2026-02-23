@@ -1,7 +1,7 @@
 package com.lumem.hgest.controllers;
 
-import com.lumem.hgest.model.StoredUser;
-import com.lumem.hgest.model.Util.SecurityUser;
+import com.lumem.hgest.model.user.StoredUser;
+import com.lumem.hgest.security.SecurityUser;
 import com.lumem.hgest.repository.StoredUserRepository;
 import jakarta.annotation.Nullable;
 import jakarta.transaction.Transactional;

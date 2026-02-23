@@ -1,6 +1,6 @@
 package com.lumem.hgest.repository;
 
-import com.lumem.hgest.model.Service;
+import com.lumem.hgest.model.service.Service;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

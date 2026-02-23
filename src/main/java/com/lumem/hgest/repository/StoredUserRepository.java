@@ -1,6 +1,6 @@
 package com.lumem.hgest.repository;
 
-import com.lumem.hgest.model.StoredUser;
+import com.lumem.hgest.model.user.StoredUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface StoredUserRepository extends JpaRepository<StoredUser,Long>{

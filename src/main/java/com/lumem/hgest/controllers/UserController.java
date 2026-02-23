@@ -30,7 +30,7 @@ public class UserController {
         //TODO
     }
 
-    // get user by name LIKE
+    // get list of user by name LIKE
     // get user by ID
 
     public record UpdateRequest( long id, @Nullable String name, @Nullable String password) {}

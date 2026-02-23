@@ -1,8 +1,9 @@
-package com.lumem.hgest.model.Util;
+package com.lumem.hgest.security.token;
 
 import com.lumem.hgest.model.RefreshToken;
 import com.lumem.hgest.repository.RefreshTokenRepository;
 import com.lumem.hgest.repository.StoredUserRepository;
+import com.lumem.hgest.security.SecurityUser;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

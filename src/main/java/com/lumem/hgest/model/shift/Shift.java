@@ -1,5 +1,7 @@
-package com.lumem.hgest.model;
+package com.lumem.hgest.model.shift;
 
+import com.lumem.hgest.model.service.Service;
+import com.lumem.hgest.model.user.StoredUser;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 
