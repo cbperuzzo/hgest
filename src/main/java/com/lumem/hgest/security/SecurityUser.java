@@ -1,7 +1,7 @@
-package com.lumem.hgest.model.Util;
+package com.lumem.hgest.security;
 
-import com.lumem.hgest.model.Role.RoleEnum;
-import com.lumem.hgest.model.StoredUser;
+import com.lumem.hgest.model.role.RoleEnum;
+import com.lumem.hgest.model.user.StoredUser;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

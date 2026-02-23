@@ -1,15 +1,14 @@
 package com.lumem.hgest.controllers;
 
-import com.lumem.hgest.model.Shift;
-import com.lumem.hgest.model.StoredUser;
-import com.lumem.hgest.model.Util.SecurityUser;
+import com.lumem.hgest.model.shift.Shift;
+import com.lumem.hgest.model.user.StoredUser;
+import com.lumem.hgest.security.SecurityUser;
 import com.lumem.hgest.repository.ServiceRepository;
 import com.lumem.hgest.repository.ShiftRepository;
 import com.lumem.hgest.repository.StoredUserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

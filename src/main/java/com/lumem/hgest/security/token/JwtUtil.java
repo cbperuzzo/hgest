@@ -1,7 +1,8 @@
-package com.lumem.hgest.model.Util;
+package com.lumem.hgest.security.token;
 
-import com.lumem.hgest.model.Role.RoleEnum;
-import com.lumem.hgest.model.StoredUser;
+import com.lumem.hgest.model.role.RoleEnum;
+import com.lumem.hgest.model.user.StoredUser;
+import com.lumem.hgest.security.SecurityUser;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;

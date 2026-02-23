@@ -1,4 +1,4 @@
-package com.lumem.hgest.model.Util;
+package com.lumem.hgest.security.token;
 
 import org.springframework.stereotype.Component;
 

@@ -1,6 +1,6 @@
-package com.lumem.hgest.model;
+package com.lumem.hgest.model.user;
 
-import com.lumem.hgest.model.Role.RoleEnum;
+import com.lumem.hgest.model.role.RoleEnum;
 import jakarta.persistence.*;
 
 

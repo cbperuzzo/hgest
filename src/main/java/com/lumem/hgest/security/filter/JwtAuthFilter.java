@@ -1,6 +1,6 @@
 package com.lumem.hgest.security.filter;
 
-import com.lumem.hgest.model.Util.JwtUtil;
+import com.lumem.hgest.security.token.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

@@ -1,9 +1,9 @@
 package com.lumem.hgest.model;
 
+import com.lumem.hgest.model.user.StoredUser;
 import jakarta.persistence.*;
 
 import java.time.Instant;
-import java.time.LocalDate;
 
 @Entity
 public class RefreshToken {

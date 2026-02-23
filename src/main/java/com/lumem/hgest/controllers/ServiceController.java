@@ -1,6 +1,6 @@
 package com.lumem.hgest.controllers;
 
-import com.lumem.hgest.model.Service;
+import com.lumem.hgest.model.service.Service;
 import com.lumem.hgest.repository.ServiceRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.http.ResponseEntity;

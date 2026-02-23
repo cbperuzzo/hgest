@@ -1,5 +1,6 @@
-package com.lumem.hgest.model;
+package com.lumem.hgest.model.service;
 
+import com.lumem.hgest.model.shift.Shift;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;

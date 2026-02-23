@@ -1,4 +1,4 @@
-package com.lumem.hgest.model.Role;
+package com.lumem.hgest.model.role;
 
 public enum RoleEnum {
     SUPERVISOR("SUPERVISOR",(short) 1),
