@@ -3,6 +3,8 @@ package com.lumem.hgest.controllers;
 import com.lumem.hgest.security.SecurityUser;
 import com.lumem.hgest.security.token.JwtUtil;
 import com.lumem.hgest.security.token.RefreshTokenService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -31,7 +33,7 @@ public class AuthController {
 
     @Deprecated
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
         try {
             Authentication auth = authManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.username(), request.password())
@@ -50,7 +52,7 @@ public class AuthController {
     }
 
     @PostMapping("/login/remember")
-    public ResponseEntity<?> loginRemember(@RequestBody LoginRequest request) {
+    public ResponseEntity<?> loginRemember(@Valid @RequestBody LoginRequest request) {
         try {
             Authentication auth = authManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.username(), request.password())
@@ -69,7 +71,7 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<?> loginRefresh(@RequestBody RefreshRequest request ){
+    public ResponseEntity<?> loginRefresh(@Valid @RequestBody RefreshRequest request ){
 
         try {
             String newRefreshToken = refreshTokenService.refresh(request.refreshToken);
@@ -81,13 +83,13 @@ public class AuthController {
         }
     }
 
-    public record LoginRequest (String username, String password){ }
+    public record LoginRequest (@NotNull String username,@NotNull String password){ }
 
-    public record AccessToken(String token) { }
+    public record AccessToken(@NotNull String token) { }
 
-    public record TokenPair(String refresh, String access) { }
+    public record TokenPair(@NotNull String refresh,@NotNull String access) { }
 
-    public record RefreshRequest(String refreshToken){ }
+    public record RefreshRequest(@NotNull String refreshToken){ }
 
 }
 

@@ -3,6 +3,8 @@ package com.lumem.hgest.controllers;
 import com.lumem.hgest.model.service.Service;
 import com.lumem.hgest.repository.ServiceRepository;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,7 +28,7 @@ public class ServiceController {
 
     @PostMapping("/open")
     @PreAuthorize("hasAnyRole('SUPERVISOR','ADMIN','DEV')")
-    public ResponseEntity<?> openService(@RequestBody OpenServiceRequest request){
+    public ResponseEntity<?> openService(@Valid @RequestBody OpenServiceRequest request){
         Service service = new Service(request.title());
         service.setOpenDate(LocalDate.now());
         service.setOpenTime(LocalTime.now());
@@ -41,7 +43,7 @@ public class ServiceController {
 
     @PostMapping("/close")
     @PreAuthorize("hasAnyRole('SUPERVISOR','ADMIN','DEV')")
-    public ResponseEntity<?> closeService(@RequestBody CloseServiceRequest request){
+    public ResponseEntity<?> closeService(@Valid @RequestBody CloseServiceRequest request){
 
         serviceRepository.closeService(request.id(),LocalTime.now(),LocalDate.now());
 
@@ -63,8 +65,8 @@ public class ServiceController {
     //get all* open
 
 
-    public record OpenServiceRequest(String title, String description, Long os) {}
+    public record OpenServiceRequest(@NotNull String title, String description,@NotNull Long os) {}
 
-    public record CloseServiceRequest(long id) {}
+    public record CloseServiceRequest(@NotNull long id) {}
 
 }
