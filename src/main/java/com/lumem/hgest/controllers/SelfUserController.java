@@ -5,6 +5,7 @@ import com.lumem.hgest.security.SecurityUser;
 import com.lumem.hgest.repository.StoredUserRepository;
 import jakarta.annotation.Nullable;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -27,7 +28,7 @@ public class SelfUserController {
     }
 
     @PostMapping("/update")
-    public ResponseEntity<?> updateSelf(@RequestBody UpdateSelfRequest request){
+    public ResponseEntity<?> updateSelf(@Valid @RequestBody UpdateSelfRequest request){
 
         long id = ((SecurityUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
 

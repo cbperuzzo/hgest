@@ -7,6 +7,8 @@ import com.lumem.hgest.repository.ServiceRepository;
 import com.lumem.hgest.repository.ShiftRepository;
 import com.lumem.hgest.repository.StoredUserRepository;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -37,7 +39,7 @@ public class ShiftController {
     }
 
     @PostMapping("/open")
-    public ResponseEntity<?> openShift(@RequestBody OpenShiftRequest request){
+    public ResponseEntity<?> openShift(@Valid @RequestBody OpenShiftRequest request){
 
         long userId = ((SecurityUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
         StoredUser userRef = storedUserRepository.getReferenceById(userId);
@@ -57,7 +59,7 @@ public class ShiftController {
     }
 
     @PostMapping("/close")
-    public ResponseEntity<?> closeShift(@RequestBody CloseShiftRequest request){
+    public ResponseEntity<?> closeShift(@Valid @RequestBody CloseShiftRequest request){
 
         long userId = ((SecurityUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
 
@@ -108,9 +110,9 @@ public class ShiftController {
     //get total time by user in range (closed)
     //get all* by service
 
-    public record OpenShiftRequest(long serviceId, LocalDate date, LocalTime time, String description, String segment) { }
+    public record OpenShiftRequest(@NotNull long serviceId,@NotNull LocalDate date,@NotNull LocalTime time, String description, String segment) { }
 
-    public record CloseShiftRequest(long id,LocalTime time, LocalDate date) {
+    public record CloseShiftRequest(@NotNull long id, @NotNull LocalTime time, @NotNull LocalDate date) {
 
 
     }
