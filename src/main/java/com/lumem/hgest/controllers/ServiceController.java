@@ -7,10 +7,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -41,16 +38,16 @@ public class ServiceController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/close")
+    @PostMapping("/close/{id}")
     @PreAuthorize("hasAnyRole('SUPERVISOR','ADMIN','DEV')")
-    public ResponseEntity<?> closeService(@Valid @RequestBody CloseServiceRequest request){
+    public ResponseEntity<?> closeService(@PathVariable("id") long id){
 
-        serviceRepository.closeService(request.id(),LocalTime.now(),LocalDate.now());
+        serviceRepository.closeService(id,LocalTime.now(),LocalDate.now());
 
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/update")
+    @PostMapping("/update/{id}")
     @PreAuthorize("hasAnyRole('SUPERVISOR','ADMIN','DEV')")
     public ResponseEntity<?> update(){
         //TODO
@@ -66,7 +63,5 @@ public class ServiceController {
 
 
     public record OpenServiceRequest(@NotNull String title, String description,@NotNull Long os) {}
-
-    public record CloseServiceRequest(@NotNull long id) {}
 
 }
