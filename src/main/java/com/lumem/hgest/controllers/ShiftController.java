@@ -12,10 +12,7 @@ import jakarta.validation.constraints.NotNull;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -58,15 +55,15 @@ public class ShiftController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/close")
-    public ResponseEntity<?> closeShift(@Valid @RequestBody CloseShiftRequest request){
+    @PostMapping("/close/{id}")
+    public ResponseEntity<?> closeShift(@PathVariable("id") long id, @Valid @RequestBody CloseShiftRequest request){
 
         long userId = ((SecurityUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
 
-        if ( !shiftRepository.existsById(request.id()) )
+        if ( !shiftRepository.existsById(id) )
             return ResponseEntity.status(400).body("no such shift found");
 
-        Shift shift = shiftRepository.getReferenceById(request.id());
+        Shift shift = shiftRepository.getReferenceById(id);
 
         if (shift.getStoredUser().getId() != userId)
             return ResponseEntity.status(403).body("invalid user");
@@ -98,7 +95,7 @@ public class ShiftController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/update")
+    @PostMapping("/update/{id}")
     @PreAuthorize("hasAnyRole('SUPERVISOR','ADMIN','DEV')")
     public ResponseEntity<?> update(){
         return null;
@@ -112,7 +109,7 @@ public class ShiftController {
 
     public record OpenShiftRequest(@NotNull long serviceId,@NotNull LocalDate date,@NotNull LocalTime time, String description, String segment) { }
 
-    public record CloseShiftRequest(@NotNull long id, @NotNull LocalTime time, @NotNull LocalDate date) {
+    public record CloseShiftRequest(@NotNull LocalTime time, @NotNull LocalDate date) {
 
 
     }
