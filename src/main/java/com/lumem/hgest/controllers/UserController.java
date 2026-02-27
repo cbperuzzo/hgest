@@ -81,7 +81,6 @@ public class UserController {
     // get list of user by name LIKE
     // get user by ID
 
-    public record UpdateRequest( long id, @Nullable String name, @Nullable String password) {}
-    public record DisableRequest( long id ) {}
+    public record UpdateRequest(@Nullable String name, @Nullable String password) {}
     public record CreateRequest(@NotNull String name, @NotNull String password,@NotNull String role) {}
 }

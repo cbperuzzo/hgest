@@ -1,5 +1,6 @@
 package com.lumem.hgest.controllers;
 
+import com.lumem.hgest.model.shift.ShiftDTO;
 import com.lumem.hgest.model.user.StoredUser;
 import com.lumem.hgest.model.user.UserDTO;
 import com.lumem.hgest.security.SecurityUser;
@@ -7,6 +8,9 @@ import com.lumem.hgest.repository.StoredUserRepository;
 import jakarta.annotation.Nullable;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -14,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @Transactional
-@RequestMapping("/self/user")
+@RequestMapping("/user/self")
 public class SelfUserController {
 
     StoredUserRepository storedUserRepository;
@@ -33,7 +37,7 @@ public class SelfUserController {
         StoredUser user = storedUserRepository.getReferenceById(id);
 
         if (!passwordEncoder.matches(request.currentPassword(),user.getHash())){
-            return ResponseEntity.status(401).build();
+            return ResponseEntity.status(400).build();
         }
 
         boolean dirty = false;
@@ -51,7 +55,6 @@ public class SelfUserController {
         return ResponseEntity.ok().build();
     }
 
-    //get self
     @GetMapping("")
     public ResponseEntity<?> getSelf(){
         SecurityUser securityUser = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -61,7 +64,8 @@ public class SelfUserController {
         return ResponseEntity.ok(new UserDTO(storedUser));
 
     }
-    //get self shifts
+
+
 
     public record UpdateSelfRequest(@Nullable String name, @Nullable String newPassword, String currentPassword) {}
 
