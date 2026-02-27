@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class ShiftController {
 
     //get by id
-    //get all* by user in range (closed)
-    //get total time by user in range (closed)
-    //get all* by service
+    //get all* by user in a date range (optional, default is "last month")
+    //get total time by user in range a range (maybe bundle this to the above one ?, but maintain this standalone also)
+    //get all by service in a date range (optional, default is "last month")
 
 }

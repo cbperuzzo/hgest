@@ -48,7 +48,12 @@ public class SelfShiftController {
             return ResponseEntity.status(400).body("this user already has an open shift");
         }
 
-        // TODO: verify that the service is still open/still exists
+        if (!serviceRepository.existsById(request.serviceId()))
+            return ResponseEntity.status(400).body("service not found");
+
+        if (serviceRepository.getReferenceById(request.serviceId()).isClosed()){
+            return ResponseEntity.status(400).body("already closed");
+        }
 
         Shift shift = new Shift();
         shift.setClosed(false);
