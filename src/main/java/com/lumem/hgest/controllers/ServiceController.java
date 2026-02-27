@@ -40,7 +40,7 @@ public class ServiceController {
 
     @PostMapping("/close/{id}")
     @PreAuthorize("hasAnyRole('SUPERVISOR','ADMIN','DEV')")
-    public ResponseEntity<?> closeService(@PathVariable("id") long id){
+    public ResponseEntity<?> closeService(@PathVariable("id") Long id){
 
         serviceRepository.closeService(id,LocalTime.now(),LocalDate.now());
 
