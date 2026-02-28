@@ -1,7 +1,7 @@
 package com.lumem.hgest.model.DTO;
 
 import com.lumem.hgest.model.Shift;
-import com.lumem.hgest.model.Util.DateFormater;
+import com.lumem.hgest.model.util.DateFormater;
 
 public class DTOUnclosedShift {
     private Long id;

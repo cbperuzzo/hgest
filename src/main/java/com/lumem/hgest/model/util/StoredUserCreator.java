@@ -1,6 +1,6 @@
-package com.lumem.hgest.model.Util;
+package com.lumem.hgest.model.util;
 
-import com.lumem.hgest.model.Role.RoleEnum;
+import com.lumem.hgest.model.role.RoleEnum;
 import com.lumem.hgest.model.StoredUser;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
