@@ -1,100 +1,86 @@
 package com.lumem.hgest.controllers;
 
-import com.lumem.hgest.model.DTO.DTOLogin;
-import com.lumem.hgest.model.DTO.DTORegister;
-import com.lumem.hgest.model.Role.RoleEnum;
-import com.lumem.hgest.model.StoredUser;
-import com.lumem.hgest.model.Util.Msg;
-import com.lumem.hgest.model.Util.StoredUserCreator;
-import com.lumem.hgest.repository.RegisterKeyRepository;
+import com.lumem.hgest.model.role.RoleEnum;
+import com.lumem.hgest.model.user.StoredUser;
 import com.lumem.hgest.repository.StoredUserRepository;
-import com.lumem.hgest.security.AuthenticationService;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import com.lumem.hgest.security.SecurityUser;
+import jakarta.annotation.Nullable;
+import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+@RestController
+@RequestMapping("/user")
+@Transactional
 public class UserController {
 
-    private StoredUserRepository storedUserRepository;
-    private RegisterKeyRepository registerKeyRepository;
-    private StoredUserCreator storedUserCreator;
-    private AuthenticationService authenticationService;
+    PasswordEncoder passwordEncoder;
+    StoredUserRepository storedUserRepository;
 
-    public UserController(StoredUserRepository storedUserRepository, RegisterKeyRepository registerKeyRepository,
-                          StoredUserCreator storedUserCreator, AuthenticationService authenticationService) {
+    public UserController(PasswordEncoder passwordEncoder, StoredUserRepository storedUserRepository) {
+        this.passwordEncoder = passwordEncoder;
         this.storedUserRepository = storedUserRepository;
-        this.registerKeyRepository = registerKeyRepository;
-        this.storedUserCreator = storedUserCreator;
-        this.authenticationService = authenticationService;
     }
 
-    @RequestMapping("/confirm/logout")
-    public ModelAndView logout(){
+    @PostMapping("/create")
+    @PreAuthorize("hasAnyRole('SUPERVISOR','ADMIN','DEV')")
+    public ResponseEntity<?> create(@Valid @RequestBody CreateRequest request){
 
-        return new ModelAndView("confirmlogout");
-    }
+        RoleEnum newRole = RoleEnum.getRoleByName(request.role());
+        RoleEnum creatorRole = ((SecurityUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getRole();
 
-    @RequestMapping("/login")
-    public ModelAndView login(@ModelAttribute("msg") Msg msg, @RequestParam(value = "error",required = false) String error){
-        ModelAndView mv = new ModelAndView("login");
-        String m;
-        if(error != null){
-            msg.setBody("wrong username or password");
-            msg.setCode("fail");
+        if (newRole == null){
+            return ResponseEntity.status(400).body("no such role found");
         }
-        mv.addObject("msg",msg);
-
-        mv.addObject("dtologin",new DTOLogin());
-
-        return mv;
-    }
-
-    @RequestMapping("/register")
-    public ModelAndView register(@ModelAttribute("msg") Msg msg){
-        ModelAndView mv = new ModelAndView("register");
-        mv.addObject("msg",msg);
-        mv.addObject("dtoregister",new DTORegister());
-        return mv;
-    }
-
-
-    @RequestMapping(value = "/register/processing",method = RequestMethod.POST)
-    public String registerProcessing(@ModelAttribute("dtoregister") DTORegister dtoRegister, RedirectAttributes redirectAttributes){
-        Msg msg = new Msg("sucssefully registerd","success");
-        boolean approved = true;
-        if(storedUserRepository.existsByUserName(dtoRegister.getUsername()) || dtoRegister.getUsername().isBlank() ){
-            msg.setBody("User name already exists or is blank");
-            msg.setCode("fail");
-            approved = false;
+        if (!creatorRole.hasControlOver(newRole)){
+            return ResponseEntity.status(403).body("the current user doesn't have the necessary authority to create new users with the selected role");
         }
-        if(!dtoRegister.doPasswordsMatch() || dtoRegister.getPassword().isBlank()){
-            msg.setBody("Password confirmation does not match actual password or password is blank");
-            msg.setCode("fail");
-            approved = false;
+        if (request.name().isEmpty() || request.password().isEmpty()){
+            return ResponseEntity.status(400).body("required fields are missing or are empty");
         }
-        if(!registerKeyRepository.existsByValueAndValid(dtoRegister.getKey(),true)){
-            msg.setBody("Register key is either invalid or non existent");
-            msg.setCode("fail");
-            approved = false;
+        if (storedUserRepository.existsByUserName(request.name())){
+            return ResponseEntity.status(400).body("a user with this exact name is already in the database");
         }
 
-        redirectAttributes.addFlashAttribute("msg",msg);
+        StoredUser newUser = new StoredUser();
+        newUser.setUserName(request.name());
+        newUser.setHash(passwordEncoder.encode(request.password()));
+        newUser.setRole(newRole);
+        newUser.setActive(true);
 
-        if (approved){
+        storedUserRepository.save(newUser);
 
-            StoredUser storedUser = storedUserCreator.createUser(dtoRegister.getPassword(),dtoRegister.getUsername()
-                    ,RoleEnum.WORKER); //default for newly created users
-            storedUserRepository.save(storedUser);
-            return "redirect:/login";
-        }
-        return "redirect:/register";
+        return ResponseEntity.ok().build();
+
     }
-    @ResponseBody
-    @RequestMapping("/profile")
-    public String profile(){
-        return authenticationService.getCurrentUserAuthority();
+    @PreAuthorize("hasAnyRole('SUPERVISOR','ADMIN','DEV')")
+    public ResponseEntity<?> update(){
+        //update user (name password and role)
+        // supervisor -> workers
+        // admin -> workers, supervisors
+        // dev -> all
+        return null;
+        //TODO
+    }
+    @PreAuthorize("hasAnyRole('SUPERVISOR','ADMIN','DEV')")
+    public ResponseEntity<?> disable(){
+        //mark as disabled
+        //remove all refresh tokens
+        return null;
+        //TODO
     }
 
+    // get list of user by name LIKE
+    // get user by ID
+
+    public record UpdateRequest(@Nullable String name, @Nullable String password) {}
+    public record CreateRequest(@NotNull String name, @NotNull String password,@NotNull String role) {}
 }
