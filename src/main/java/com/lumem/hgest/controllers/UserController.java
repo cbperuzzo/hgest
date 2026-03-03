@@ -2,20 +2,24 @@ package com.lumem.hgest.controllers;
 
 import com.lumem.hgest.model.role.RoleEnum;
 import com.lumem.hgest.model.user.StoredUser;
+import com.lumem.hgest.model.user.UserDTO;
+import com.lumem.hgest.repository.RefreshTokenRepository;
+import com.lumem.hgest.repository.ShiftRepository;
 import com.lumem.hgest.repository.StoredUserRepository;
 import com.lumem.hgest.security.SecurityUser;
 import jakarta.annotation.Nullable;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.Instant;
 
 @RestController
 @RequestMapping("/user")
@@ -24,10 +28,12 @@ public class UserController {
 
     PasswordEncoder passwordEncoder;
     StoredUserRepository storedUserRepository;
+    RefreshTokenRepository refreshTokenRepository;
 
-    public UserController(PasswordEncoder passwordEncoder, StoredUserRepository storedUserRepository) {
+    public UserController(PasswordEncoder passwordEncoder, StoredUserRepository storedUserRepository, RefreshTokenRepository refreshTokenRepository) {
         this.passwordEncoder = passwordEncoder;
         this.storedUserRepository = storedUserRepository;
+        this.refreshTokenRepository = refreshTokenRepository;
     }
 
     @PostMapping("/create")
@@ -62,25 +68,86 @@ public class UserController {
 
     }
     @PreAuthorize("hasAnyRole('SUPERVISOR','ADMIN','DEV')")
-    public ResponseEntity<?> update(){
-        //update user (name password and role)
-        // supervisor -> workers
-        // admin -> workers, supervisors
-        // dev -> all
-        return null;
-        //TODO
+    @PatchMapping("/update/{id}")
+    public ResponseEntity<?> update(@PathVariable("id") Long id, @Valid @RequestBody UpdateRequest request){
+
+        RoleEnum actorRole = ((SecurityUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getRole();
+
+        if (!storedUserRepository.existsById(id))
+            return ResponseEntity.status(400).body("no such user");
+
+        StoredUser target = storedUserRepository.getReferenceById(id);
+
+        if (!actorRole.hasControlOver(target.getRole()))
+            return ResponseEntity.status(400).body("the current user doesn't have authority over the target user");
+
+        RoleEnum newRole = RoleEnum.getRoleByName(request.role());
+
+        if (newRole != null && !actorRole.hasControlOver(newRole))
+            return ResponseEntity.status(400).body("the current user doesn't have the authority to assign this role to other users");
+
+        if (newRole != null)
+            target.setRole(newRole);
+
+        if (request.name() != null  && !request.name().isEmpty())
+            target.setUserName(request.name());
+
+        if (request.password() != null  && !request.password().isEmpty())
+            target.setHash(passwordEncoder.encode(request.password()));
+
+        storedUserRepository.save(target);
+
+        return ResponseEntity.ok().build();
+
     }
     @PreAuthorize("hasAnyRole('SUPERVISOR','ADMIN','DEV')")
-    public ResponseEntity<?> disable(){
-        //mark as disabled
-        //remove all refresh tokens
-        return null;
-        //TODO
+    @PatchMapping("disable/{id}")
+    public ResponseEntity<?> disable(@PathVariable("id") Long id){
+        RoleEnum actorRole = ((SecurityUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getRole();
+
+        if (!storedUserRepository.existsById(id))
+            return ResponseEntity.status(400).body("no such user");
+
+        StoredUser target = storedUserRepository.getReferenceById(id);
+
+        if (!actorRole.hasControlOver(target.getRole()))
+            return ResponseEntity.status(400).body("the current user doesn't have authority over the target user");
+
+        target.setActive(false);
+
+        refreshTokenRepository.revokeAllActiveByUser(target.getId(), Instant.now());
+
+        return ResponseEntity.ok().build();
     }
 
-    // get list of user by name LIKE
-    // get user by ID
+    @GetMapping
+    @PreAuthorize("hasAnyRole('SUPERVISOR','ADMIN','DEV')")
+    public Page<UserDTO> search(
+            @RequestParam(required = false) String name,
+            Pageable pageable){
 
-    public record UpdateRequest(@Nullable String name, @Nullable String password) {}
-    public record CreateRequest(@NotNull String name, @NotNull String password,@NotNull String role) {}
+        Page<StoredUser> page;
+
+        if (name == null || name.isBlank()) {
+            page = storedUserRepository.findAll(pageable);
+        } else {
+            page = storedUserRepository
+                    .findByUserNameContainingIgnoreCase(name, pageable);
+        }
+
+        return page.map(UserDTO::new);
+    }
+
+
+    @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('SUPERVISOR','ADMIN','DEV')")
+    public ResponseEntity<UserDTO> getById(@PathVariable Long id){
+
+        return storedUserRepository.findById(id)
+                .map(user -> ResponseEntity.ok(new UserDTO(user)))
+                .orElse(ResponseEntity.status(404).build());
+    }
+
+    public record UpdateRequest(@Nullable String name,@Nullable String password,@Nullable String role) {}
+    public record CreateRequest(@NotNull String name,@NotNull String password,@NotNull String role) {}
 }
