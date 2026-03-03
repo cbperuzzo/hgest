@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 
 @RestController
-@RequestMapping("/shift")
+@RequestMapping("api/shift")
 @Transactional
 public class ShiftController {
 

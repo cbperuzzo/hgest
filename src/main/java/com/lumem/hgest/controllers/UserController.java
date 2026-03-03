@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.Instant;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("api/user")
 @Transactional
 public class UserController {
 

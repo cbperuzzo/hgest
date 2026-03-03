@@ -18,7 +18,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 @RestController
-@RequestMapping("/service")
+@RequestMapping("api/service")
 @Transactional
 public class ServiceController {
 

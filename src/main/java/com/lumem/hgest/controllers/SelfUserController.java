@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @Transactional
-@RequestMapping("/user/self")
+@RequestMapping("api/user/self")
 public class SelfUserController {
 
     StoredUserRepository storedUserRepository;

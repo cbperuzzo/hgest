@@ -23,7 +23,7 @@ import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 
 @RestController
-@RequestMapping("/shift/self")
+@RequestMapping("api/shift/self")
 @Transactional
 public class SelfShiftController {
 
