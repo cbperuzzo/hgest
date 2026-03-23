@@ -6,6 +6,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -22,6 +23,7 @@ public class ShiftController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('SUPERVISOR','ADMIN','DEV')")
     public ResponseEntity<ShiftDTO> getById(@PathVariable Long id) {
 
         return shiftRepository.findById(id)
@@ -30,6 +32,7 @@ public class ShiftController {
     }
 
     @GetMapping("/user/{userId}")
+    @PreAuthorize("hasAnyRole('SUPERVISOR','ADMIN','DEV')")
     public Page<ShiftDTO> getByUserInRange(
             @PathVariable Long userId,
             @RequestParam(required = false) LocalDate start,
@@ -49,6 +52,7 @@ public class ShiftController {
     }
 
     @GetMapping("/user/{userId}/total")
+    @PreAuthorize("hasAnyRole('SUPERVISOR','ADMIN','DEV')")
     public ResponseEntity<Long> getTotalTimeByUser(
             @PathVariable Long userId,
             @RequestParam(required = false) LocalDate start,
@@ -67,6 +71,7 @@ public class ShiftController {
     }
 
     @GetMapping("/service/{serviceId}")
+    @PreAuthorize("hasAnyRole('SUPERVISOR','ADMIN','DEV')")
     public Page<ShiftDTO> getByServiceInRange(
             @PathVariable Long serviceId,
             @RequestParam(required = false) LocalDate start,
