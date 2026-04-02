@@ -34,5 +34,4 @@ build/
 
 ### custom ###
 
-docker-compose.yml
 src/main/resources/application.properties

@@ -1,0 +1,14 @@
+services:
+  db:
+    image: postgres
+    ports:
+      - "3030:5432"
+    volumes:
+      - pg-data:/var/lib/postgresql
+    environment:
+      POSTGRES_PASSWORD: hill3m_
+      POSTGRES_USER: postgres
+volumes:
+  pg-data:
+    labels:
+      com.example.description: "Database volume for hgest"
