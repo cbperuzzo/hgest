@@ -3,6 +3,7 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+aplication.properties
 
 ### STS ###
 .apt_generated
@@ -35,3 +36,6 @@ build/
 ### custom ###
 
 src/main/resources/application.properties
+
+bugfixes.md
+docker-compose.yml
