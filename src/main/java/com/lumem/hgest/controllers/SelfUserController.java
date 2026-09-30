@@ -36,12 +36,16 @@ public class SelfUserController {
 
         StoredUser user = storedUserRepository.getReferenceById(id);
 
-        if (!passwordEncoder.matches(request.currentPassword(),user.getHash())){
+        if (request.currentPassword() == null || !passwordEncoder.matches(request.currentPassword(),user.getHash())){
             return ResponseEntity.status(400).build();
         }
 
         boolean dirty = false;
         if (request.name() != null && !request.name().isEmpty()) {
+
+            if (!request.name().equals(user.getUserName()) && storedUserRepository.existsByUserName(request.name()))
+                return ResponseEntity.status(400).body("a user with this exact name is already in the database");
+
             user.setUserName(request.name());
             dirty = true;
         }

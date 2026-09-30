@@ -89,8 +89,13 @@ public class UserController {
         if (newRole != null)
             target.setRole(newRole);
 
-        if (request.name() != null  && !request.name().isEmpty())
+        if (request.name() != null  && !request.name().isEmpty()) {
+
+            if (!request.name().equals(target.getUserName()) && storedUserRepository.existsByUserName(request.name()))
+                return ResponseEntity.status(400).body("a user with this exact name is already in the database");
+
             target.setUserName(request.name());
+        }
 
         if (request.password() != null  && !request.password().isEmpty())
             target.setHash(passwordEncoder.encode(request.password()));

@@ -12,6 +12,7 @@ public class StoredUser {
 
     private boolean active;
 
+    @Column(unique = true)
     private String userName;
 
     @Enumerated(EnumType.STRING)

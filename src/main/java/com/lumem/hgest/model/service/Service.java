@@ -24,7 +24,7 @@ public class Service {
 
     private boolean closed;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY,mappedBy = "service")
     private List<Shift> shifts;
 
     public Service() {

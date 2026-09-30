@@ -39,25 +39,24 @@ public class RefreshTokenService {
 
         String hash = crypto.hash(secretBytes);
 
-        RefreshToken entity = new RefreshToken();
-        entity.setTokenId(tokenId);
-        entity.setTokenHash(hash);
-        entity.setUser(storedUserRepository.getReferenceById(user.getId()));
-        entity.setCreatedAt(Instant.now());
-        entity.setExpiresAt(Instant.now().plus(14, ChronoUnit.DAYS));
+        RefreshToken token = new RefreshToken();
+        token.setTokenId(tokenId);
+        token.setTokenHash(hash);
+        token.setUser(storedUserRepository.getReferenceById(user.getId()));
+        token.setCreatedAt(Instant.now());
+        token.setExpiresAt(Instant.now().plus(14, ChronoUnit.DAYS));
 
-        repository.save(entity);
+        repository.save(token);
 
         return tokenId + "." + secretEncoded;
     }
 
     public String issue(SecurityUser user) {
 
-        repository.revokeAllActiveByUser(user.getId(),Instant.now());
-        String token = create(user);
-        return token;
+        return create(user);
     }
 
+    @Transactional(noRollbackFor = TokenReuseException.class)
     public String refresh(String rawToken) throws RuntimeException{
 
         String[] parts = rawToken.split("\\.");
@@ -73,7 +72,9 @@ public class RefreshTokenService {
 
         if (token.isRevoked()) {
 
-            throw new RuntimeException("Token revoked - possible compromise");
+            repository.revokeAllActiveByUser(token.getUser().getId(), Instant.now());
+
+            throw new TokenReuseException("Token revoked - possible compromise, all active tokens for this user were revoked");
         }
 
         if (token.getExpiresAt().isBefore(Instant.now())) {
@@ -95,6 +96,45 @@ public class RefreshTokenService {
         repository.save(token);
 
         return newToken;
+    }
+
+    public void revoke(String rawToken) throws RuntimeException{
+
+        RefreshToken token = verify(rawToken);
+
+        if (token.isRevoked())
+            return;
+
+        token.setRevoked(true);
+        token.setRevokedAt(Instant.now());
+
+        repository.save(token);
+    }
+
+    public void revokeAllSessions(String rawToken) throws RuntimeException{
+
+        RefreshToken token = verify(rawToken);
+
+        repository.revokeAllActiveByUser(token.getUser().getId(), Instant.now());
+    }
+
+    private RefreshToken verify(String rawToken) throws RuntimeException{
+
+        String[] parts = rawToken.split("\\.");
+        if (parts.length != 2) {
+            throw new RuntimeException("Invalid token format");
+        }
+
+        byte[] secretBytes = Base64.getUrlDecoder().decode(parts[1]);
+
+        RefreshToken token = repository.findByTokenId(parts[0])
+                .orElseThrow(() -> new RuntimeException("Token not found"));
+
+        if (!crypto.constantTimeEquals(crypto.hash(secretBytes), token.getTokenHash())) {
+            throw new RuntimeException("Invalid token secret");
+        }
+
+        return token;
     }
 
     public SecurityUser extractUser(String rawToken) throws RuntimeException{

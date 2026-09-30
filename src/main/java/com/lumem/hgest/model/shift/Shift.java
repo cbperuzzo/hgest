@@ -5,6 +5,7 @@ import com.lumem.hgest.model.user.StoredUser;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -40,6 +41,10 @@ public class Shift {
     private boolean closed;
 
     private Long totalMinutes;
+
+    private Instant registeredOpening;
+
+    private Instant registeredClosing;
 
     public Shift(){
 
@@ -150,6 +155,22 @@ public class Shift {
 
     public void setImageSource(String imageSource) {
         this.imageSource = imageSource;
+    }
+
+    public Instant getRegisteredOpening() {
+        return registeredOpening;
+    }
+
+    public void setRegisteredOpening(Instant registeredOpening) {
+        this.registeredOpening = registeredOpening;
+    }
+
+    public Instant getRegisteredClosing() {
+        return registeredClosing;
+    }
+
+    public void setRegisteredClosing(Instant registeredClosing) {
+        this.registeredClosing = registeredClosing;
     }
     
 }

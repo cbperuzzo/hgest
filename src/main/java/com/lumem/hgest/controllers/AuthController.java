@@ -83,6 +83,32 @@ public class AuthController {
         }
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(@Valid @RequestBody RefreshRequest request){
+
+        try {
+            refreshTokenService.revoke(request.refreshToken);
+        }
+        catch (Exception ignored){
+        }
+
+        // so that there's no way to check if a token id exists
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/logout/all")
+    public ResponseEntity<?> logoutAll(@Valid @RequestBody RefreshRequest request){
+
+        try {
+            refreshTokenService.revokeAllSessions(request.refreshToken);
+        }
+        catch (Exception ignored){
+        }
+
+        // so that there's no way to check if a token id exists
+        return ResponseEntity.noContent().build();
+    }
+
     public record LoginRequest (@NotNull String username,@NotNull String password){ }
 
     public record AccessToken(@NotNull String token) { }

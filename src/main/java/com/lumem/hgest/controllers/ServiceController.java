@@ -128,6 +128,7 @@ public class ServiceController {
     }
 
     @GetMapping("")
+    @PreAuthorize("hasAnyRole('SUPERVISOR','ADMIN','DEV')")
     public Page<ServiceDTO> getAll(
             @RequestParam(required = false) Boolean closed,
             @RequestParam(required = false) LocalDate startDate,

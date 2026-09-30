@@ -5,6 +5,7 @@ import com.lumem.hgest.model.user.StoredUser;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -20,7 +21,9 @@ public record ShiftDTO (
         String imageSource,
         LocalDate closeDate,
         boolean closed,
-        Long totalMinutes
+        Long totalMinutes,
+        Instant registeredOpening,
+        Instant registeredClosing
 ) {
     public ShiftDTO(Shift shift){
         this(
@@ -35,7 +38,9 @@ public record ShiftDTO (
                 shift.getImageSource(),
                 shift.getCloseDate(),
                 shift.isClosed(),
-                shift.getTotalMinutes()
+                shift.getTotalMinutes(),
+                shift.getRegisteredOpening(),
+                shift.getRegisteredClosing()
                 );
     }
 

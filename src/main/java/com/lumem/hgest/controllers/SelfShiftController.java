@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -61,8 +62,9 @@ public class SelfShiftController {
         shift.setStoredUser(userRef);
         shift.setOpenDate(request.date());
         shift.setOpenTime(request.time());
-        shift.setDescription(shift.getDescription());
+        shift.setDescription(request.description());
         shift.setSegment(request.segment());
+        shift.setRegisteredOpening(Instant.now());
 
         shiftRepository.save(shift);
 
@@ -89,6 +91,7 @@ public class SelfShiftController {
 
         shift.setCloseDate(request.date());
         shift.setCloseTime(request.time());
+        shift.setRegisteredClosing(Instant.now());
 
         LocalDateTime open = LocalDateTime.of(
                 shift.getOpenDate(),
@@ -107,6 +110,16 @@ public class SelfShiftController {
         shiftRepository.save(shift);
 
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/open")
+    public ResponseEntity<ShiftDTO> getOpenShift(){
+
+        long userId = ((SecurityUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
+
+        return shiftRepository.findFirstByStoredUserIdAndClosedFalseOrderByIdDesc(userId)
+                .map(shift -> ResponseEntity.ok(new ShiftDTO(shift)))
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("")

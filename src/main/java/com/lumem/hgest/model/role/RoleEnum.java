@@ -23,6 +23,10 @@ public enum RoleEnum {
     }
 
     public static RoleEnum getRoleByName(String name){
+        if (name == null){
+            return null;
+        }
+
         return switch (name.toUpperCase()) {
             case "SUPERVISOR" -> RoleEnum.SUPERVISOR;
             case "WORKER" -> RoleEnum.WORKER;
