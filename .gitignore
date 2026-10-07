@@ -39,3 +39,5 @@ src/main/resources/application.properties
 
 bugfixes.md
 docker-compose.yml
+
+.env

@@ -1,0 +1,9 @@
+target
+.git
+.idea
+.vscode
+.env
+tests
+*.md
+# local config with secrets: the container is configured through environment variables instead
+src/main/resources/application.properties
