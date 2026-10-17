@@ -19,6 +19,12 @@ public interface ServiceRepository extends JpaRepository<Service,Long> {
 
     Page<Service> findByClosed(boolean closed, Pageable pageable);
 
+    Page<Service> findByClosedFalse(Pageable pageable);
+
+    Page<Service> findByClosedFalseAndTitleContainingIgnoreCase(String title, Pageable pageable);
+
+    Page<Service> findByClosedFalseAndOs(long os, Pageable pageable);
+
     @Query("""
         SELECT s FROM service s
         WHERE (:closed IS NULL OR s.closed = :closed)

@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -102,6 +103,27 @@ public class ServiceController {
         return serviceRepository
                 .findByTitleContainingIgnoreCase(title, pageable)
                 .map(ServiceDTO::new);
+    }
+
+    // open services any logged-in user can pick when starting a shift
+    @GetMapping("/available")
+    public Page<ServiceDTO> getAvailable(
+            @RequestParam(required = false) String q,
+            @PageableDefault(size = 20, sort = "id", direction = Sort.Direction.DESC) Pageable pageable
+    ){
+        Page<Service> services;
+
+        if (q == null || q.isBlank()) {
+            services = serviceRepository.findByClosedFalse(pageable);
+        }
+        else if (q.trim().matches("\\d{1,18}")) {
+            services = serviceRepository.findByClosedFalseAndOs(Long.parseLong(q.trim()), pageable);
+        }
+        else {
+            services = serviceRepository.findByClosedFalseAndTitleContainingIgnoreCase(q.trim(), pageable);
+        }
+
+        return services.map(ServiceDTO::new);
     }
 
     @GetMapping("/{id}")

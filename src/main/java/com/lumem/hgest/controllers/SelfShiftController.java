@@ -1,7 +1,7 @@
 package com.lumem.hgest.controllers;
 
 import com.lumem.hgest.model.shift.Shift;
-import com.lumem.hgest.model.shift.ShiftDTO;
+import com.lumem.hgest.model.shift.ShiftDescription;
 import com.lumem.hgest.model.user.StoredUser;
 import com.lumem.hgest.security.SecurityUser;
 import com.lumem.hgest.repository.ServiceRepository;
@@ -93,6 +93,9 @@ public class SelfShiftController {
         shift.setCloseTime(request.time());
         shift.setRegisteredClosing(Instant.now());
 
+        if (request.description() != null && !request.description().isBlank())
+            shift.setDescription(request.description());
+
         LocalDateTime open = LocalDateTime.of(
                 shift.getOpenDate(),
                 shift.getOpenTime()
@@ -113,17 +116,17 @@ public class SelfShiftController {
     }
 
     @GetMapping("/open")
-    public ResponseEntity<ShiftDTO> getOpenShift(){
+    public ResponseEntity<ShiftDescription> getOpenShift(){
 
         long userId = ((SecurityUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
 
         return shiftRepository.findFirstByStoredUserIdAndClosedFalseOrderByIdDesc(userId)
-                .map(shift -> ResponseEntity.ok(new ShiftDTO(shift)))
+                .map(shift -> ResponseEntity.ok(new ShiftDescription(shift)))
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("")
-    public Page<ShiftDTO> getShifts(@PageableDefault(size = 5) Pageable pageable, @RequestParam(required = false) Boolean closed){
+    public Page<ShiftDescription> getShifts(@PageableDefault(size = 5) Pageable pageable, @RequestParam(required = false) Boolean closed){
 
         long id = ((SecurityUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
 
@@ -136,14 +139,22 @@ public class SelfShiftController {
             shifts = shiftRepository.findByStoredUserIdAndClosed(id,closed,pageable);
         }
 
-        return shifts.map(ShiftDTO::new);
+        return shifts.map(ShiftDescription::new);
 
+    }
+
+    @GetMapping("/total")
+    public ResponseEntity<Long> getTotalMinutes(@RequestParam LocalDate start, @RequestParam LocalDate end){
+
+        long id = ((SecurityUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
+
+        return ResponseEntity.ok(shiftRepository.sumTotalMinutesByUserInRange(id, start, end));
     }
 
 
     public record OpenShiftRequest(@NotNull long serviceId,@NotNull LocalDate date,@NotNull LocalTime time, String description, String segment) { }
 
-    public record CloseShiftRequest(@NotNull LocalTime time, @NotNull LocalDate date) {
+    public record CloseShiftRequest(@NotNull LocalTime time, @NotNull LocalDate date, String description) {
 
 
     }
