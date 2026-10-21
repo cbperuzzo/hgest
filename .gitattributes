@@ -1,0 +1,4 @@
+# scripts run on Linux servers/containers must keep LF line endings even when checked out on Windows
+*.sh text eol=lf
+mvnw text eol=lf
+Caddyfile text eol=lf

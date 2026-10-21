@@ -1,0 +1,56 @@
+
+services:
+  db:
+    image: postgres:17
+    restart: unless-stopped
+    volumes:
+      - hgest-pg-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: hgest
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d hgest"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/hgest
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-postgres}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET in .env (32+ chars)}
+      JWT_EXPIRATION: ${JWT_EXPIRATION:-14400000}
+      HGEST_BOOTSTRAP_USERNAME: ${HGEST_BOOTSTRAP_USERNAME:-}
+      HGEST_BOOTSTRAP_PASSWORD: ${HGEST_BOOTSTRAP_PASSWORD:-}
+      HGEST_CORS_ALLOWED_ORIGINS: ${HGEST_CORS_ALLOWED_ORIGINS:-}
+      # JVM memory cap; raise it if the server has more RAM to spare
+      JAVA_TOOL_OPTIONS: ${JAVA_OPTS:--Xms128m -Xmx512m}
+
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    depends_on:
+      - api
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      API_DOMAIN: ${API_DOMAIN:?set API_DOMAIN in .env (e.g. api.example.com)}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+
+volumes:
+  hgest-pg-data:
+  caddy-data:
+  caddy-config:

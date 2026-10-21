@@ -41,3 +41,4 @@ bugfixes.md
 docker-compose.yml
 
 .env
+backups/
