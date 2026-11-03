@@ -37,7 +37,7 @@ public class SpringSecurityConfiguration{
 
     @Bean
     public PasswordEncoder passwordEncoder(){
-        int strengthFactor = 10;
+        int strengthFactor = 12;
         return new BCryptPasswordEncoder(strengthFactor);
     }
 
