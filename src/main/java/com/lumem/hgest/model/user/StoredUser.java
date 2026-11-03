@@ -3,6 +3,8 @@ package com.lumem.hgest.model.user;
 import com.lumem.hgest.model.role.RoleEnum;
 import jakarta.persistence.*;
 
+import java.util.Locale;
+
 
 @Entity(name = "user_info")
 public class StoredUser {
@@ -14,6 +16,9 @@ public class StoredUser {
 
     @Column(unique = true)
     private String userName;
+
+    @Column(unique = true)
+    private String email;
 
     @Enumerated(EnumType.STRING)
     private RoleEnum role;
@@ -59,6 +64,18 @@ public class StoredUser {
 
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = normalizeEmail(email);
+    }
+
+    public static String normalizeEmail(String email) {
+        return email == null || email.isBlank() ? null : email.trim().toLowerCase(Locale.ROOT);
     }
 
     public void setHash(String password) {

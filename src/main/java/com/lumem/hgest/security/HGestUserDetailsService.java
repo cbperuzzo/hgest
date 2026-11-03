@@ -17,8 +17,8 @@ public class HGestUserDetailsService implements UserDetailsService {
     }
 
     @Override
-    public SecurityUser loadUserByUsername(String username) throws UsernameNotFoundException {
-        StoredUser u = source.getByUserName(username);
+    public SecurityUser loadUserByUsername(String alias) throws UsernameNotFoundException {
+        StoredUser u = source.findByAlias(alias);
 
         if (u == null || !u.isActive()){
             throw new UsernameNotFoundException("username not found");

@@ -8,6 +8,7 @@ import com.lumem.hgest.repository.StoredUserRepository;
 import jakarta.annotation.Nullable;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -40,6 +41,14 @@ public class SelfUserController {
             return ResponseEntity.status(400).build();
         }
 
+        if (request.name() != null && !request.name().equals(user.getUserName()) && request.name().contains("@"))
+            return ResponseEntity.status(400).body("a user name can't contain @");
+
+        String email = StoredUser.normalizeEmail(request.email());
+
+        if (email != null && !email.equals(user.getEmail()) && storedUserRepository.existsByEmail(email))
+            return ResponseEntity.status(400).body("a user with this email is already in the database");
+
         boolean dirty = false;
         if (request.name() != null && !request.name().isEmpty()) {
 
@@ -47,6 +56,11 @@ public class SelfUserController {
                 return ResponseEntity.status(400).body("a user with this exact name is already in the database");
 
             user.setUserName(request.name());
+            dirty = true;
+        }
+
+        if (request.email() != null){
+            user.setEmail(email);
             dirty = true;
         }
         if (request.newPassword() != null && !request.newPassword().isEmpty()){
@@ -71,6 +85,6 @@ public class SelfUserController {
 
 
 
-    public record UpdateSelfRequest(@Nullable String name, @Nullable String newPassword, String currentPassword) {}
+    public record UpdateSelfRequest(@Nullable String name, @Nullable String newPassword, String currentPassword, @Nullable @Email String email) {}
 
 }

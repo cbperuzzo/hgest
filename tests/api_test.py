@@ -127,7 +127,7 @@ def need(ctx, *keys):
 
 def login(api, name, password):
     status, body = api.call("POST", "/api/auth/login/remember",
-                            {"username": name, "password": password})
+                            {"alias": name, "password": password})
     expect(status, 200, body)
     if not isinstance(body, dict) or "access" not in body or "refresh" not in body:
         raise AssertionError("login did not return a token pair: %r" % (body,))
@@ -137,7 +137,7 @@ def login(api, name, password):
 @step("reject a wrong password")
 def _(api, ctx):
     status, body = api.call("POST", "/api/auth/login/remember",
-                            {"username": ctx["admin_user"], "password": "definitely-not-the-password"})
+                            {"alias": ctx["admin_user"], "password": "definitely-not-the-password"})
     expect(status, 401, body)
     return "401 as expected"
 
@@ -151,7 +151,7 @@ def _(api, ctx):
 @step("log in through the deprecated endpoint")
 def _(api, ctx):
     status, body = api.call("POST", "/api/auth/login",
-                            {"username": ctx["admin_user"], "password": ctx["admin_password"]})
+                            {"alias": ctx["admin_user"], "password": ctx["admin_password"]})
     expect(status, 200, body)
     if not isinstance(body, dict) or "token" not in body:
         raise AssertionError("expected a token, got %r" % (body,))
@@ -261,6 +261,98 @@ def _(api, ctx):
     need(ctx, "worker_id")
     ctx["worker_access"], ctx["worker_refresh"] = login(api, ctx["worker_user"], ctx["worker_password"])
     return "worker session established"
+
+
+@step("reject an @ in a user name")
+def _(api, ctx):
+    need(ctx, "admin_access")
+    status, body = api.call("POST", "/api/user/create",
+                            {"name": ctx["worker_user"] + "@example.com", "password": ctx["worker_password"], "role": "WORKER"},
+                            token=ctx["admin_access"])
+    expect(status, 400, body)
+    return "400: %s" % body
+
+
+@step("set a user's email")
+def _(api, ctx):
+    need(ctx, "admin_access", "worker_id")
+    email = ctx["worker_user"].lower() + "@example.com"
+    status, body = api.call("PATCH", "/api/user/update/%s" % ctx["worker_id"],
+                            {"email": email}, token=ctx["admin_access"])
+    expect(status, 200, body)
+    ctx["worker_email"] = email
+    status, body = api.call("GET", "/api/user/%s" % ctx["worker_id"], token=ctx["admin_access"])
+    expect(status, 200, body)
+    if body.get("email") != email:
+        raise AssertionError("expected %r, got %r" % (email, body.get("email")))
+    return email
+
+
+@step("log in with the email, in any case")
+def _(api, ctx):
+    need(ctx, "worker_email")
+    login(api, ctx["worker_email"].upper(), ctx["worker_password"])
+    return "logged in as %s" % ctx["worker_email"].upper()
+
+
+@step("reject a wrong password with the email")
+def _(api, ctx):
+    need(ctx, "worker_email")
+    status, body = api.call("POST", "/api/auth/login/remember",
+                            {"alias": ctx["worker_email"], "password": "definitely-not-the-password"})
+    expect(status, 401, body)
+    return "401 as expected"
+
+
+@step("reject a duplicate email on create")
+def _(api, ctx):
+    need(ctx, "admin_access", "worker_email")
+    status, body = api.call("POST", "/api/user/create",
+                            {"name": ctx["worker_user"] + "_2", "password": ctx["worker_password"],
+                             "role": "WORKER", "email": ctx["worker_email"].upper()},
+                            token=ctx["admin_access"])
+    expect(status, 400, body)
+    return "400: %s" % body
+
+
+@step("reject an invalid email on create")
+def _(api, ctx):
+    need(ctx, "admin_access")
+    status, body = api.call("POST", "/api/user/create",
+                            {"name": ctx["worker_user"] + "_3", "password": ctx["worker_password"],
+                             "role": "WORKER", "email": "not-an-email"},
+                            token=ctx["admin_access"])
+    expect(status, 400, body)
+    return "400 as expected"
+
+
+@step("change my own email")
+def _(api, ctx):
+    need(ctx, "worker_access", "worker_email")
+    email = "self." + ctx["worker_email"]
+    status, body = api.call("POST", "/api/user/self/update",
+                            {"email": email, "currentPassword": ctx["worker_password"]},
+                            token=ctx["worker_access"])
+    expect(status, 200, body)
+    login(api, email, ctx["worker_password"])
+    status, body = api.call("POST", "/api/auth/login/remember",
+                            {"alias": ctx["worker_email"], "password": ctx["worker_password"]})
+    expect(status, 401, body)
+    ctx["worker_email"] = email
+    return "the new email logs in, the old one does not"
+
+
+@step("a blank email removes it")
+def _(api, ctx):
+    need(ctx, "admin_access", "worker_id", "worker_email")
+    status, body = api.call("PATCH", "/api/user/update/%s" % ctx["worker_id"],
+                            {"email": ""}, token=ctx["admin_access"])
+    expect(status, 200, body)
+    status, body = api.call("POST", "/api/auth/login/remember",
+                            {"alias": ctx["worker_email"], "password": ctx["worker_password"]})
+    expect(status, 401, body)
+    login(api, ctx["worker_user"], ctx["worker_password"])
+    return "the email no longer logs in, the user name still does"
 
 
 @step("a worker cannot list users")
@@ -615,7 +707,7 @@ def _(api, ctx):
 def _(api, ctx):
     need(ctx, "worker_id")
     status, body = api.call("POST", "/api/auth/login/remember",
-                            {"username": ctx["worker_user"], "password": ctx["worker_password"]})
+                            {"alias": ctx["worker_user"], "password": ctx["worker_password"]})
     expect(status, 401, body)
     return "401 as expected"
 

@@ -10,6 +10,7 @@ import com.lumem.hgest.security.SecurityUser;
 import jakarta.annotation.Nullable;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -55,9 +56,19 @@ public class UserController {
         if (storedUserRepository.existsByUserName(request.name())){
             return ResponseEntity.status(400).body("a user with this exact name is already in the database");
         }
+        if (request.name().contains("@")){
+            return ResponseEntity.status(400).body("a user name can't contain @");
+        }
+
+        String email = StoredUser.normalizeEmail(request.email());
+
+        if (email != null && storedUserRepository.existsByEmail(email)){
+            return ResponseEntity.status(400).body("a user with this email is already in the database");
+        }
 
         StoredUser newUser = new StoredUser();
         newUser.setUserName(request.name());
+        newUser.setEmail(email);
         newUser.setHash(passwordEncoder.encode(request.password()));
         newUser.setRole(newRole);
         newUser.setActive(true);
@@ -86,6 +97,14 @@ public class UserController {
         if (newRole != null && !actorRole.hasControlOver(newRole))
             return ResponseEntity.status(400).body("the current user doesn't have the authority to assign this role to other users");
 
+        if (request.name() != null && !request.name().equals(target.getUserName()) && request.name().contains("@"))
+            return ResponseEntity.status(400).body("a user name can't contain @");
+
+        String email = StoredUser.normalizeEmail(request.email());
+
+        if (email != null && !email.equals(target.getEmail()) && storedUserRepository.existsByEmail(email))
+            return ResponseEntity.status(400).body("a user with this email is already in the database");
+
         if (newRole != null)
             target.setRole(newRole);
 
@@ -96,6 +115,9 @@ public class UserController {
 
             target.setUserName(request.name());
         }
+
+        if (request.email() != null)
+            target.setEmail(email);
 
         if (request.password() != null  && !request.password().isEmpty())
             target.setHash(passwordEncoder.encode(request.password()));
@@ -153,6 +175,6 @@ public class UserController {
                 .orElse(ResponseEntity.status(404).build());
     }
 
-    public record UpdateRequest(@Nullable String name,@Nullable String password,@Nullable String role) {}
-    public record CreateRequest(@NotNull String name,@NotNull String password,@NotNull String role) {}
+    public record UpdateRequest(@Nullable String name,@Nullable String password,@Nullable String role,@Nullable @Email String email) {}
+    public record CreateRequest(@NotNull String name,@NotNull String password,@NotNull String role,@Nullable @Email String email) {}
 }

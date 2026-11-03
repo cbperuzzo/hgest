@@ -36,7 +36,7 @@ public class AuthController {
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
         try {
             Authentication auth = authManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(request.username(), request.password())
+                    new UsernamePasswordAuthenticationToken(request.alias(), request.password())
             );
 
             SecurityUser user = (SecurityUser) auth.getPrincipal();
@@ -55,7 +55,7 @@ public class AuthController {
     public ResponseEntity<?> loginRemember(@Valid @RequestBody LoginRequest request) {
         try {
             Authentication auth = authManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(request.username(), request.password())
+                    new UsernamePasswordAuthenticationToken(request.alias(), request.password())
             );
 
             SecurityUser user = (SecurityUser) auth.getPrincipal();
@@ -109,7 +109,7 @@ public class AuthController {
         return ResponseEntity.noContent().build();
     }
 
-    public record LoginRequest (@NotNull String username,@NotNull String password){ }
+    public record LoginRequest (@NotNull String alias,@NotNull String password){ }
 
     public record AccessToken(@NotNull String token) { }
 
