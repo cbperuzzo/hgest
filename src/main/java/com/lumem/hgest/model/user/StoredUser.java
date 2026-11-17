@@ -1,9 +1,12 @@
 package com.lumem.hgest.model.user;
 
 import com.lumem.hgest.model.role.RoleEnum;
+import com.lumem.hgest.model.service.Service;
 import jakarta.persistence.*;
 
+import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 
 @Entity(name = "user_info")
@@ -24,6 +27,10 @@ public class StoredUser {
     private RoleEnum role;
 
     private String hash;
+
+    @ManyToMany(mappedBy = "assignees")
+    private Set<Service> assignedServices;
+
 
     public StoredUser(long id, String hash, RoleEnum role, String userName, boolean active) {
         this.id = id;
@@ -92,6 +99,14 @@ public class StoredUser {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public Set<Service> getAssignedServices() {
+        return assignedServices;
+    }
+
+    public void setAssignedServices(Set<Service> assignedServices) {
+        this.assignedServices = assignedServices;
     }
 }
 

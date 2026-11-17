@@ -1,11 +1,14 @@
 package com.lumem.hgest.model.service;
 
 import com.lumem.hgest.model.shift.Shift;
+import com.lumem.hgest.model.task.Task;
+import com.lumem.hgest.model.user.StoredUser;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Set;
 
 @Entity(name = "service")
 public class Service {
@@ -25,22 +28,19 @@ public class Service {
     private boolean closed;
 
     @OneToMany(fetch = FetchType.LAZY,mappedBy = "service")
-    private List<Shift> shifts;
+    private Set<Shift> shifts;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "service_assignment",
+            joinColumns = @JoinColumn(name = "service_id"),
+            inverseJoinColumns = @JoinColumn(name = "userEmployee_id"))
+    private Set<StoredUser> assignees;
+
+    @OneToMany(mappedBy = "service",fetch = FetchType.LAZY)
+    private Set<Task> tasks;
 
     public Service() {
-    }
-
-    public Service(long id, long os, String title, String description, LocalDate openDate, LocalTime openTime, LocalDate closeDate, LocalTime closeTime, boolean closed, List<Shift> shifts) {
-        this.id = id;
-        this.os = os;
-        this.title = title;
-        this.description = description;
-        this.openDate = openDate;
-        this.openTime = openTime;
-        this.closeDate = closeDate;
-        this.closeTime = closeTime;
-        this.closed = closed;
-        this.shifts = shifts;
     }
 
     public Service(String title) {
@@ -111,11 +111,11 @@ public class Service {
         this.description = description;
     }
 
-    public List<Shift> getShifts() {
+    public Set<Shift> getShifts() {
         return shifts;
     }
 
-    public void setShifts(List<Shift> shifts) {
+    public void setShifts(Set<Shift> shifts) {
         this.shifts = shifts;
     }
 
@@ -125,5 +125,13 @@ public class Service {
 
     public void setClosed(boolean closed) {
         this.closed = closed;
+    }
+
+    public Set<StoredUser> getAssignees() {
+        return assignees;
+    }
+
+    public void setAssignees(Set<StoredUser> assignees) {
+        this.assignees = assignees;
     }
 }

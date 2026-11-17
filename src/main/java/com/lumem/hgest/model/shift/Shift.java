@@ -1,6 +1,7 @@
 package com.lumem.hgest.model.shift;
 
 import com.lumem.hgest.model.service.Service;
+import com.lumem.hgest.model.task.Task;
 import com.lumem.hgest.model.user.StoredUser;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
@@ -8,6 +9,8 @@ import jakarta.persistence.*;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 public class Shift {
@@ -45,6 +48,9 @@ public class Shift {
     private Instant registeredOpening;
 
     private Instant registeredClosing;
+
+    @OneToMany(mappedBy = "completionShift",fetch = FetchType.LAZY)
+    private Set<Task> completedTasks;
 
     public Shift(){
 
